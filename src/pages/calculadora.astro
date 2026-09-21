@@ -2,12 +2,38 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import items from '../data/items.json';
 import constants from '../data/constants.json';
-import { ORDEM_SLOT as slotOrder, slotLabel } from '../lib/labels';
+import { ORDEM_SLOT, slotLabel, statLabel, rarityLabel } from '../lib/labels';
+import { withBase } from '../lib/base';
 
 const c = constants as unknown as Record<string, number>;
+
+const ATRIBUTOS = ['hp', 'atk', 'def', 'crit', 'parry'] as const;
+
+// Enviado pro script do cliente: só o que a comparação precisa, já em pt-BR.
 const itemsBySlot = Object.fromEntries(
-  slotOrder.map((slot) => [slot, items.filter((i) => i.slot === slot)])
+  ORDEM_SLOT.map((slot) => [
+    slot,
+    items
+      .filter((i) => i.slot === slot)
+      .map((i) => ({
+        id: i.id,
+        nome: i.namePt,
+        raridade: rarityLabel(i.rarity),
+        stats: i.stats,
+        efeitos: i.effectsPt,
+      })),
+  ])
 );
+
+const rotulos = Object.fromEntries(ATRIBUTOS.map((s) => [s, statLabel(s)]));
+
+const pesos = {
+  hp: c.PS_HP_WEIGHT,
+  atk: c.PS_ATK_WEIGHT,
+  def: c.PS_DEF_WEIGHT,
+  crit: c.PS_CRIT_WEIGHT,
+  parry: c.PS_PARRY_WEIGHT,
+};
 ---
 
 <BaseLayout
@@ -15,10 +41,9 @@ const itemsBySlot = Object.fromEntries(
   banner="Ferramentas"
   description="Comparador de itens e calculadora de Power Score de Lootborne — ferramentas de apoio, sem automatizar nada dentro do jogo."
 >
-  <header class="mb-8">
-    <p class="text-gold-bright text-sm font-semibold uppercase tracking-wide mb-2">Ferramentas</p>
-    <h1 class="font-display text-3xl md:text-4xl font-semibold mb-3">Calculadora de build</h1>
-    <p class="text-text-soft max-w-3xl">
+  <header class="mb-5">
+    <h1 class="page-title mb-2">Calculadora de build</h1>
+    <p class="text-text-soft max-w-3xl text-sm leading-relaxed">
       Ferramentas de apoio pra decisão — nada aqui roda dentro do jogo ou automatiza qualquer coisa.
       A fórmula de Power Score é uma <span class="text-gold">interpretação</span> (peso das constantes
       reais do jogo), não uma confirmação 1:1 do código — use como guia comparativo, não como número
@@ -26,133 +51,193 @@ const itemsBySlot = Object.fromEntries(
     </p>
   </header>
 
-  <section class="panel p-5 mb-8">
-    <h2 class="font-display text-xl mb-4">Comparador de item</h2>
-    <div class="grid md:grid-cols-2 gap-5">
-      <div>
-        <label class="text-xs text-text-muted uppercase tracking-wide block mb-1">Slot</label>
-        <select id="cmp-slot" class="w-full bg-deep border border-copper rounded-lg px-3 py-2 text-sm mb-3">
-          {slotOrder.map((s) => <option value={s}>{slotLabel(s)}</option>)}
-        </select>
-        <label class="text-xs text-text-muted uppercase tracking-wide block mb-1">Item A</label>
-        <select id="cmp-a" class="w-full bg-deep border border-copper rounded-lg px-3 py-2 text-sm mb-3"></select>
-        <label class="text-xs text-text-muted uppercase tracking-wide block mb-1">Item B</label>
-        <select id="cmp-b" class="w-full bg-deep border border-copper rounded-lg px-3 py-2 text-sm"></select>
+  <section class="panel mb-5">
+    <div class="panel-head">
+      <img src={withBase('/ui/nav-itens.png')} alt="" width="14" height="14" class="pixel" />
+      Comparador de item
+    </div>
+    <div class="p-4">
+      <div class="grid sm:grid-cols-3 gap-3 mb-4">
+        <div class="min-w-0">
+          <label for="cmp-slot" class="text-[0.65rem] text-gold uppercase tracking-wider block mb-1">
+            Slot
+          </label>
+          <select
+            id="cmp-slot"
+            class="w-full min-w-0 bg-deep border border-copper px-3 py-2 text-sm rounded-sm focus:outline-none focus:border-gold"
+          >
+            {ORDEM_SLOT.map((s) => <option value={s}>{slotLabel(s)}</option>)}
+          </select>
+        </div>
+        <div class="min-w-0">
+          <label for="cmp-a" class="text-[0.65rem] text-gold uppercase tracking-wider block mb-1">
+            Item A
+          </label>
+          <select
+            id="cmp-a"
+            class="w-full min-w-0 bg-deep border border-copper px-3 py-2 text-sm rounded-sm focus:outline-none focus:border-gold"
+          ></select>
+        </div>
+        <div class="min-w-0">
+          <label for="cmp-b" class="text-[0.65rem] text-gold uppercase tracking-wider block mb-1">
+            Item B
+          </label>
+          <select
+            id="cmp-b"
+            class="w-full min-w-0 bg-deep border border-copper px-3 py-2 text-sm rounded-sm focus:outline-none focus:border-gold"
+          ></select>
+        </div>
       </div>
       <div id="cmp-result" class="text-sm"></div>
     </div>
   </section>
 
-  <section class="panel p-5">
-    <h2 class="font-semibold text-lg mb-1">Calculadora de Power Score</h2>
-    <p class="text-text-soft text-sm mb-4">
-      Some os stats totais do seu personagem (soma dos 6 itens equipados) pra estimar seu PS.
-    </p>
-    <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-4">
-      {
-        ['hp', 'atk', 'def', 'crit', 'parry'].map((stat) => (
-          <div>
-            <label class="text-xs text-text-muted uppercase block mb-1">{stat}</label>
-            <input
-              type="number"
-              id={`ps-${stat}`}
-              value="0"
-              class="w-full bg-deep border border-copper rounded-lg px-2 py-1.5 text-sm"
-            />
-          </div>
-        ))
-      }
+  <section class="panel">
+    <div class="panel-head">
+      <img src={withBase('/ui/nav-calculadora.png')} alt="" width="14" height="14" class="pixel" />
+      Power Score
     </div>
-    <div id="ps-result" class="text-sm"></div>
+    <div class="p-4">
+      <p class="text-text-soft text-sm mb-4">
+        Some os atributos totais do seu personagem (a soma dos 6 itens equipados) pra estimar seu PS.
+      </p>
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-4">
+        {
+          ATRIBUTOS.map((stat) => (
+            <div class="min-w-0">
+              <label
+                for={`ps-${stat}`}
+                class="text-[0.65rem] text-gold uppercase tracking-wider block mb-1"
+              >
+                {statLabel(stat)}
+              </label>
+              <input
+                type="number"
+                id={`ps-${stat}`}
+                value="0"
+                min="0"
+                inputmode="numeric"
+                class="w-full min-w-0 bg-deep border border-copper px-2 py-1.5 text-sm rounded-sm tabular-nums focus:outline-none focus:border-gold"
+              />
+            </div>
+          ))
+        }
+      </div>
+      <div id="ps-result" class="text-sm"></div>
+    </div>
   </section>
 
-  <script define:vars={{ itemsBySlot, PS_HP_WEIGHT: c.PS_HP_WEIGHT, PS_ATK_WEIGHT: c.PS_ATK_WEIGHT, PS_DEF_WEIGHT: c.PS_DEF_WEIGHT, PS_CRIT_WEIGHT: c.PS_CRIT_WEIGHT, PS_PARRY_WEIGHT: c.PS_PARRY_WEIGHT, PS_MAX_LEGIT_L60: c.PS_MAX_LEGIT_L60 }}>
-    function powerScore(s: { hp: number; atk: number; def: number; crit: number; parry: number }) {
-      return (
-        s.hp * PS_HP_WEIGHT +
-        s.atk * PS_ATK_WEIGHT +
-        s.def * PS_DEF_WEIGHT +
-        s.crit * PS_CRIT_WEIGHT +
-        s.parry * PS_PARRY_WEIGHT
-      );
+  {/* Sem TypeScript aqui dentro: um <script> com atributo (define:vars) é
+      tratado como is:inline e vai cru pro navegador, sem transpilar. Foi o que
+      quebrava esta página inteira com "SyntaxError: Unexpected token ':'". */}
+  <script
+    define:vars={{ itemsBySlot, rotulos, pesos, atributos: ATRIBUTOS, tetoL60: c.PS_MAX_LEGIT_L60 }}
+  >
+    const fmt = (v) => String(Number(Number(v).toFixed(3)));
+
+    function powerScore(s) {
+      return atributos.reduce((total, k) => total + (Number(s[k]) || 0) * pesos[k], 0);
     }
 
     // --- Comparador de item ---
-    const slotSel = document.getElementById('cmp-slot') as HTMLSelectElement;
-    const aSel = document.getElementById('cmp-a') as HTMLSelectElement;
-    const bSel = document.getElementById('cmp-b') as HTMLSelectElement;
-    const result = document.getElementById('cmp-result') as HTMLDivElement;
+    const slotSel = document.getElementById('cmp-slot');
+    const aSel = document.getElementById('cmp-a');
+    const bSel = document.getElementById('cmp-b');
+    const result = document.getElementById('cmp-result');
 
-    function populateItemSelect(sel: HTMLSelectElement, slot: string) {
-      const list = (itemsBySlot as Record<string, any[]>)[slot] ?? [];
-      sel.innerHTML = list.map((it) => `<option value="${it.id}">${it.namePt} (${it.rarity})</option>`).join('');
+    const listaDo = (slot) => itemsBySlot[slot] ?? [];
+
+    function popular(sel, slot, indicePadrao) {
+      const lista = listaDo(slot);
+      sel.innerHTML = lista
+        .map((it) => `<option value="${it.id}">${it.nome} (${it.raridade})</option>`)
+        .join('');
+      // Abre já com dois itens diferentes, senão a comparação nasce vazia.
+      if (lista.length) sel.selectedIndex = Math.min(indicePadrao, lista.length - 1);
     }
 
-    function findItem(slot: string, id: string) {
-      return ((itemsBySlot as Record<string, any[]>)[slot] ?? []).find((i) => String(i.id) === id);
-    }
+    const achar = (slot, id) => listaDo(slot).find((i) => String(i.id) === id);
 
-    function renderComparison() {
+    function comparar() {
       const slot = slotSel.value;
-      const a = findItem(slot, aSel.value);
-      const b = findItem(slot, bSel.value);
-      if (!a || !b) return;
-      const stats = ['hp', 'atk', 'def', 'crit', 'parry'] as const;
-      const rows = stats
+      const a = achar(slot, aSel.value);
+      const b = achar(slot, bSel.value);
+      if (!a || !b) {
+        result.innerHTML = '';
+        return;
+      }
+      const linhas = atributos
         .map((s) => {
           const av = a.stats[s] ?? 0;
           const bv = b.stats[s] ?? 0;
-          const winner = av === bv ? '' : av > bv ? 'a' : 'b';
-          return `<tr>
-            <td class="py-1 text-text-muted uppercase text-xs">${s}</td>
-            <td class="py-1 text-right ${winner === 'a' ? 'text-gold-bright font-semibold' : ''}">${av}</td>
-            <td class="py-1 text-right ${winner === 'b' ? 'text-gold-bright font-semibold' : ''}">${bv}</td>
+          const venceA = av > bv ? 'text-gold-bright font-semibold' : '';
+          const venceB = bv > av ? 'text-gold-bright font-semibold' : '';
+          return `<tr class="border-t border-copper/30">
+            <td class="py-1 text-text-muted uppercase text-xs">${rotulos[s]}</td>
+            <td class="py-1 text-right tabular-nums ${venceA}">${fmt(av)}</td>
+            <td class="py-1 text-right tabular-nums ${venceB}">${fmt(bv)}</td>
           </tr>`;
         })
         .join('');
+
       const psA = powerScore(a.stats);
       const psB = powerScore(b.stats);
+      const melhor = psA === psB ? 'empate' : psA > psB ? a.nome : b.nome;
+
+      const efeitos = [a, b]
+        .filter((it) => it.efeitos.length)
+        .map(
+          (it) =>
+            `<div><strong class="text-text-main">${it.nome}:</strong> ${it.efeitos.join(' · ')}</div>`
+        )
+        .join('');
+
       result.innerHTML = `
-        <table class="w-full">
-          <thead><tr class="text-text-muted text-xs"><th class="text-left font-medium">Stat</th><th class="text-right font-medium">${a.namePt}</th><th class="text-right font-medium">${b.namePt}</th></tr></thead>
-          <tbody>${rows}</tbody>
-        </table>
-        <div class="mt-3 pt-3 border-t border-copper flex justify-between text-xs text-text-soft">
-          <span>PS estimado A: <strong class="text-text-main">${psA.toFixed(1)}</strong></span>
-          <span>PS estimado B: <strong class="text-text-main">${psB.toFixed(1)}</strong></span>
+        <div class="overflow-x-auto">
+          <table class="w-full min-w-[19rem]">
+            <thead>
+              <tr class="text-gold text-xs uppercase tracking-wider">
+                <th class="text-left font-medium pb-1">Atributo</th>
+                <th class="text-right font-medium pb-1">${a.nome}</th>
+                <th class="text-right font-medium pb-1">${b.nome}</th>
+              </tr>
+            </thead>
+            <tbody>${linhas}</tbody>
+          </table>
         </div>
-        ${a.effectsPt.length || b.effectsPt.length ? `<div class="mt-3 text-xs text-text-soft space-y-1">
-          ${a.effectsPt.length ? `<div><strong class="text-text-main">${a.namePt}:</strong> ${a.effectsPt.join(' · ')}</div>` : ''}
-          ${b.effectsPt.length ? `<div><strong class="text-text-main">${b.namePt}:</strong> ${b.effectsPt.join(' · ')}</div>` : ''}
-        </div>` : ''}
+        <div class="mt-3 pt-3 border-t border-copper grid sm:grid-cols-3 gap-2 text-xs text-text-soft">
+          <span>PS de A: <strong class="text-text-main tabular-nums">${psA.toFixed(1)}</strong></span>
+          <span>PS de B: <strong class="text-text-main tabular-nums">${psB.toFixed(1)}</strong></span>
+          <span class="sm:text-right">Maior PS: <strong class="text-gold-bright">${melhor}</strong></span>
+        </div>
+        ${efeitos ? `<div class="mt-3 text-xs text-text-soft space-y-1">${efeitos}</div>` : ''}
       `;
     }
 
-    slotSel.addEventListener('change', () => {
-      populateItemSelect(aSel, slotSel.value);
-      populateItemSelect(bSel, slotSel.value);
-      renderComparison();
-    });
-    aSel.addEventListener('change', renderComparison);
-    bSel.addEventListener('change', renderComparison);
-    populateItemSelect(aSel, slotSel.value);
-    populateItemSelect(bSel, slotSel.value);
-    renderComparison();
+    function trocarSlot() {
+      popular(aSel, slotSel.value, 0);
+      popular(bSel, slotSel.value, 1);
+      comparar();
+    }
 
-    // --- Calculadora de PS manual ---
-    const psInputs = ['hp', 'atk', 'def', 'crit', 'parry'].map(
-      (s) => document.getElementById(`ps-${s}`) as HTMLInputElement
-    );
-    const psResult = document.getElementById('ps-result') as HTMLDivElement;
+    slotSel.addEventListener('change', trocarSlot);
+    aSel.addEventListener('change', comparar);
+    bSel.addEventListener('change', comparar);
+    trocarSlot();
+
+    // --- Power Score manual ---
+    const psInputs = atributos.map((s) => document.getElementById(`ps-${s}`));
+    const psResult = document.getElementById('ps-result');
 
     function renderPs() {
-      const [hp, atk, def, crit, parry] = psInputs.map((i) => Number(i.value) || 0);
-      const ps = powerScore({ hp, atk, def, crit, parry });
-      const pct = (ps / PS_MAX_LEGIT_L60) * 100;
+      const valores = {};
+      atributos.forEach((s, i) => (valores[s] = Number(psInputs[i].value) || 0));
+      const ps = powerScore(valores);
+      const pct = (ps / tetoL60) * 100;
       psResult.innerHTML = `
-        <div class="text-2xl font-display text-gold-bright">${ps.toFixed(0)}</div>
+        <div class="text-2xl font-display text-gold-bright tabular-nums">${ps.toFixed(0)}</div>
         <div class="text-text-soft text-xs mt-1">
-          ${pct.toFixed(0)}% do teto legítimo de nível 60 (${PS_MAX_LEGIT_L60})
+          ${pct.toFixed(0)}% do teto legítimo de nível 60 (${tetoL60})
         </div>
       `;
     }

@@ -62,12 +62,19 @@ const browse = [
 
 <BaseLayout title="Início">
   <section class="panel filigree mb-6">
-    <div class="p-6 md:p-8 grid lg:grid-cols-[1.35fr_1fr] gap-8 items-center">
+    {/* Duas colunas só a partir de xl: entre lg e xl a sidebar já ocupa espaço
+        e a coluna da esquerda ficaria estreita demais para o título. */}
+    <div class="p-4 sm:p-6 md:p-8 grid xl:grid-cols-[1.35fr_1fr] gap-6 xl:gap-8 items-center">
       <div>
-        <h1 class="font-display text-4xl md:text-5xl text-gold-bright leading-tight mb-1">
+        {/* "LOOTBORNE" na Celtic Bit é uma palavra indivisível e larga: em
+            tamanho fixo ela define a largura mínima da página inteira e gera
+            scroll horizontal no celular. O clamp escala com o viewport. */}
+        <h1
+          class="font-display text-[clamp(1.35rem,7vw,3rem)] text-gold-bright leading-tight mb-1"
+        >
           LOOTBORNE
         </h1>
-        <p class="font-display text-2xl md:text-3xl text-copper-light mb-4">Wiki</p>
+        <p class="font-display text-[clamp(1.1rem,4vw,1.875rem)] text-copper-light mb-4">Wiki</p>
         <p class="text-text-soft mb-5 max-w-xl text-sm leading-relaxed">
           Base de consulta do idle RPG dark fantasy que roda na sua barra de tarefas. Item, inimigo,
           setor e fórmula — tudo <strong class="text-text-main">extraído dos arquivos do jogo</strong>,

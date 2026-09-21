@@ -21,7 +21,7 @@ import { withBase } from '../lib/base';
   description="Os 424 itens de Lootborne — atributos, raridade, elemento, efeitos e ícones extraídos direto do jogo."
 >
   <header class="mb-5">
-    <h1 class="font-display text-3xl md:text-4xl text-gold-bright mb-2">{items.length} itens</h1>
+    <h1 class="page-title mb-2">{items.length} itens</h1>
     <p class="text-text-soft max-w-3xl text-sm leading-relaxed">
       Todo o loot do jogo, com atributos e efeitos exatos. Filtre por raridade, slot ou elemento — ou
       busque por um trecho do efeito (ex: "crítico", "bloquear", "Vigor"). Os nomes são os da
@@ -96,8 +96,8 @@ import { withBase } from '../lib/base';
             placeholder="Nome ou efeito..."
             class="bg-deep border border-copper px-3 py-1 text-sm flex-1 min-w-[200px] rounded-sm focus:outline-none focus:border-gold"
           />
-          <label class="chip cursor-pointer inline-flex items-center gap-1.5">
-            <input type="checkbox" id="f-boss" class="align-middle" />
+          <label class="chip cursor-pointer inline-flex items-center gap-1.5 py-1">
+            <input type="checkbox" id="f-boss" class="w-3.5 h-3.5 accent-[var(--t-gold)]" />
             Só de chefe
           </label>
         </dd>

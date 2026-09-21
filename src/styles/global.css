@@ -100,6 +100,16 @@ body {
   border: 1px solid var(--t-copper);
 }
 
+/* Conforto de leitura: num painel de 1100px o texto corrido vira uma linha
+   longa demais pra acompanhar. Limita só parágrafo e lista — tabela, grid de
+   card e barra de drop continuam usando a largura toda. Pra soltar em algum
+   caso específico, é só passar uma max-w-* própria no elemento. */
+.panel p,
+.panel ul,
+.panel ol {
+  max-width: 72ch;
+}
+
 /* Filigrana dourada nos cantos — recortada do AB_UI_CHAR_PANEL do jogo. */
 .filigree::before,
 .filigree::after {
@@ -120,6 +130,24 @@ body {
   top: 2px;
   right: 2px;
   transform: scaleX(-1);
+}
+
+/* --- Titulo de pagina ----------------------------------------------------- */
+/* A Celtic Bit e' larga e palavras como "Calculadora" nao quebram: num tamanho
+   fixo elas definem a largura minima da pagina e geram scroll horizontal no
+   celular. O clamp faz o titulo acompanhar o viewport. */
+.page-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 6vw, 2.25rem);
+  line-height: 1.15;
+  color: var(--t-gold-bright);
+}
+
+/* Titulo de secao, mesma logica num degrau abaixo. */
+.section-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.15rem, 4.2vw, 1.5rem);
+  line-height: 1.2;
 }
 
 /* --- Faixa de titulo de pagina ------------------------------------------- */
@@ -251,6 +279,47 @@ body {
 }
 
 /* --- Navegacao lateral --------------------------------------------------- */
+/* No desktop e' uma coluna no fluxo; abaixo de lg vira gaveta sobreposta, pra
+   nao espremer o conteudo (era o bug: o main caia pra ~126px e a pagina
+   ganhava scroll horizontal). Sendo `fixed`, ela sai do fluxo do flex. */
+@media (max-width: 1023px) {
+  #sidebar {
+    position: fixed;
+    top: 3.5rem;
+    bottom: 0;
+    left: 0;
+    width: min(17rem, 82vw);
+    z-index: 45;
+    overflow-y: auto;
+    transform: translateX(-100%);
+    transition: transform 0.18s ease;
+    box-shadow: 0 0 2rem rgba(0, 0, 0, 0.6);
+  }
+  #sidebar[data-open='true'] {
+    transform: translateX(0);
+  }
+  #nav-scrim {
+    position: fixed;
+    inset: 3.5rem 0 0 0;
+    z-index: 44;
+    background: rgba(0, 0, 0, 0.6);
+  }
+  /* Enquanto a gaveta esta aberta, trava o scroll do fundo. */
+  body:has(#sidebar[data-open='true']) {
+    overflow: hidden;
+  }
+  /* Alvo de toque confortavel na gaveta. */
+  #sidebar .nav-link {
+    padding: 0.55rem 0.75rem;
+    font-size: 0.95rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  #sidebar {
+    transition: none;
+  }
+}
+
 .nav-link {
   display: flex;
   align-items: center;

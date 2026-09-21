@@ -12,8 +12,7 @@ const c = constants as Record<string, number | string | boolean>;
   description="Como o Lootborne funciona por baixo dos panos: fórmulas e valores reais extraídos dos arquivos do jogo."
 >
   <header class="mb-10">
-    <p class="text-gold-bright text-sm font-semibold uppercase tracking-wide mb-2">Como o jogo funciona</p>
-    <h1 class="font-display text-3xl md:text-4xl font-semibold mb-4">Mecânicas do Lootborne</h1>
+    <h1 class="page-title mb-3">Mecânicas do Lootborne</h1>
     <p class="text-text-soft max-w-3xl">
       Todo número nesta página foi extraído direto de <code class="text-gold-bright">GameConstants</code>,
       a classe do próprio jogo que centraliza as constantes de balanceamento. São valores exatos, não
@@ -24,7 +23,7 @@ const c = constants as Record<string, number | string | boolean>;
   </header>
 
   <section class="mb-12">
-    <h2 class="font-display text-2xl font-semibold mb-3">O loop: stamina, não tempo</h2>
+    <h2 class="section-title text-gold-bright mb-3">O loop: stamina, não tempo</h2>
     <p class="text-text-soft mb-4 max-w-3xl">
       Lootborne é um idle RPG gated por <strong class="text-text-main">stamina</strong>, não por
       tempo puro. Cada batalha custa stamina; quando acaba, seu personagem para até regenerar.
@@ -56,7 +55,7 @@ const c = constants as Record<string, number | string | boolean>;
   </section>
 
   <section class="mb-12">
-    <h2 class="font-display text-2xl font-semibold mb-3">Second Wind — progresso offline</h2>
+    <h2 class="section-title text-gold-bright mb-3">Second Wind — progresso offline</h2>
     <p class="text-text-soft max-w-3xl mb-4">
       Fechar o jogo não é tempo perdido. Existe um sistema de "segundo fôlego" que acumula um bônus
       pra quando você volta:
@@ -73,7 +72,7 @@ const c = constants as Record<string, number | string | boolean>;
   </section>
 
   <section class="mb-12">
-    <h2 class="font-display text-2xl font-semibold mb-3">Combate</h2>
+    <h2 class="section-title text-gold-bright mb-3">Combate</h2>
     <div class="grid sm:grid-cols-2 gap-4 mb-5">
       <div class="panel p-4">
         <div class="text-lg font-display">Crit</div>
@@ -83,8 +82,8 @@ const c = constants as Record<string, number | string | boolean>;
         </p>
       </div>
       <div class="panel p-4">
-        <div class="text-lg font-display">Parry</div>
-        <p class="text-text-soft text-sm">Taxa de parry tem teto de <code>{c.PARRY_CAP}%</code>.</p>
+        <div class="text-lg font-display">Bloqueio</div>
+        <p class="text-text-soft text-sm">Taxa de bloqueio tem teto de <code>{c.PARRY_CAP}%</code>.</p>
       </div>
       <div class="panel p-4">
         <div class="text-lg font-display">Variância de dano</div>
@@ -143,7 +142,7 @@ const c = constants as Record<string, number | string | boolean>;
   </section>
 
   <section class="mb-12">
-    <h2 class="font-display text-2xl font-semibold mb-3">Nível, XP e "Power Score"</h2>
+    <h2 class="section-title text-gold-bright mb-3">Nível, XP e "Power Score"</h2>
     <div class="grid sm:grid-cols-3 gap-4 mb-5">
       <div class="panel p-4">
         <div class="text-2xl font-display text-gold-bright">{c.MAX_LEVEL}</div>
@@ -176,7 +175,7 @@ const c = constants as Record<string, number | string | boolean>;
       <p class="text-text-soft text-sm">
         O jogo pesa os 5 stats de forma bem desigual pra calcular o "poder" de um item/personagem:
         HP × <code>{c.PS_HP_WEIGHT}</code>, ATK × <code>{c.PS_ATK_WEIGHT}</code>, DEF ×{' '}
-        <code>{c.PS_DEF_WEIGHT}</code>, Crit × <code>{c.PS_CRIT_WEIGHT}</code>, Parry ×{' '}
+        <code>{c.PS_DEF_WEIGHT}</code>, Crit × <code>{c.PS_CRIT_WEIGHT}</code>, Bloqueio ×{' '}
         <code>{c.PS_PARRY_WEIGHT}</code>. Repare que <strong>ATK pesa muito mais que HP</strong>{' '}
         (9 vs 0.8) — um ponto de ataque vale, nessa métrica, mais de <strong>11× um ponto de HP</strong>.
         Isso é usado tanto pra decidir o nível mínimo exigido pra equipar um item quanto, muito
@@ -186,7 +185,7 @@ const c = constants as Record<string, number | string | boolean>;
   </section>
 
   <section class="mb-12">
-    <h2 class="font-display text-2xl font-semibold mb-3">Desbloqueio de raridade por nível</h2>
+    <h2 class="section-title text-gold-bright mb-3">Desbloqueio de raridade por nível</h2>
     <p class="text-text-soft max-w-2xl mb-4">
       Você só pode equipar (ou a raridade só começa a dropar de verdade) a partir de certo nível:
     </p>
@@ -221,7 +220,7 @@ const c = constants as Record<string, number | string | boolean>;
   </section>
 
   <section class="mb-12">
-    <h2 class="font-display text-2xl font-semibold mb-3">Inventário</h2>
+    <h2 class="section-title text-gold-bright mb-3">Inventário</h2>
     <div class="grid sm:grid-cols-3 gap-4">
       <div class="panel p-4">
         <div class="text-2xl font-display text-gold-bright">{c.INVENTORY_CAP_T1}</div>
@@ -239,7 +238,7 @@ const c = constants as Record<string, number | string | boolean>;
   </section>
 
   <section class="mb-12">
-    <h2 class="font-display text-2xl font-semibold mb-3">Forja e desmonte</h2>
+    <h2 class="section-title text-gold-bright mb-3">Forja e desmonte</h2>
     <p class="text-text-soft max-w-2xl mb-4">
       Item duplicado dá pra desmontar em <strong class="text-text-main">Bloodmark</strong> (moeda de
       forja) — o valor sobe com a raridade:
@@ -272,7 +271,7 @@ const c = constants as Record<string, number | string | boolean>;
   </section>
 
   <section class="mb-12">
-    <h2 class="font-display text-2xl font-semibold mb-3">PvP assíncrono</h2>
+    <h2 class="section-title text-gold-bright mb-3">PvP assíncrono</h2>
     <p class="text-text-soft max-w-3xl mb-4">
       Sem fila, sem lobby: seu build fica disponível pra outros jogadores desafiarem a qualquer
       momento, e o resultado é validado por replay (até <code>{c.PVP_REPLAY_MAX_FILES}</code>{' '}
@@ -302,7 +301,7 @@ const c = constants as Record<string, number | string | boolean>;
   </section>
 
   <section class="mb-12">
-    <h2 class="font-display text-2xl font-semibold mb-3">Arena (modo infinito)</h2>
+    <h2 class="section-title text-gold-bright mb-3">Arena (modo infinito)</h2>
     <p class="text-text-soft max-w-3xl mb-4">
       A Arena escala os inimigos onda a onda com uma curva quadrática — cresce devagar no começo e
       acelera:
@@ -323,7 +322,7 @@ const c = constants as Record<string, number | string | boolean>;
   </section>
 
   <section class="mb-12">
-    <h2 class="font-display text-2xl font-semibold mb-3">Setores e drop</h2>
+    <h2 class="section-title text-gold-bright mb-3">Setores e drop</h2>
     <p class="text-text-soft max-w-2xl mb-2">
       Cada setor define sua própria tabela de drop por raridade — veja os valores reais na página de{' '}
       <a href={withBase('/setores')} class="text-gold-bright hover:underline">Setores</a>. Existe um sistema de{' '}
@@ -333,7 +332,7 @@ const c = constants as Record<string, number | string | boolean>;
   </section>
 
   <section class="mb-4">
-    <h2 class="font-display text-2xl font-semibold mb-3">Sinergia mono-elemento</h2>
+    <h2 class="section-title text-gold-bright mb-3">Sinergia mono-elemento</h2>
     <p class="text-text-soft max-w-2xl">
       Montar um set com o mesmo elemento em todos os 6 slots ativa um multiplicador de{' '}
       <code>{c.MONO_SYNERGY_MULTIPLIER}×</code> — <strong class="text-text-main">+30%</strong>. Isso é

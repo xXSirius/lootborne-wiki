@@ -3,6 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import enemies from '../data/enemies.json';
 import { elementLabel, elementColor, elementIcon } from '../lib/labels';
 import { withBase } from '../lib/base';
+import { num, pct } from '../lib/format';
 
 const sorted = [...enemies].sort((a, b) => a.variants[0].level - b.variants[0].level);
 
@@ -16,7 +17,7 @@ const COR: Record<string, string> = { Gray: 'Cinza', Blue: 'Azul', Purple: 'Roxo
   description="Bestiário de Lootborne — stats reais por variante e resistências elementais de cada inimigo."
 >
   <header class="mb-5">
-    <h1 class="font-display text-3xl md:text-4xl text-gold-bright mb-3">
+    <h1 class="page-title mb-3">
       {enemies.length} inimigos
     </h1>
     <p class="text-text-soft max-w-3xl text-sm leading-relaxed">
@@ -30,7 +31,7 @@ const COR: Record<string, string> = { Gray: 'Cinza', Blue: 'Azul', Purple: 'Roxo
     <p class="text-text-soft max-w-3xl text-sm leading-relaxed mt-2">
       <strong class="text-gold">Detalhe que muda tudo:</strong> segundo o manual do jogo, só{' '}
       <strong class="text-text-main">as armas equipadas</strong> contam para resistência e fraqueza —
-      elmo, corpo, cinto, anel e amuleto do mesmo elemento não entram nessa conta. A
+      elmo, corpo, cinto, anel e amuleto do mesmo elemento não entram nessa conta. A{' '}
       <a href={withBase('/guia')} class="text-gold hover:underline">página de guia</a> traz o cruzamento pronto
       de qual elemento levar em cada setor.
     </p>
@@ -39,7 +40,9 @@ const COR: Record<string, string> = { Gray: 'Cinza', Blue: 'Azul', Purple: 'Roxo
   <div class="grid md:grid-cols-2 gap-4">
     {
       sorted.map((en) => (
-        <div class="panel p-4">
+        // min-w-0: sem isso o grid item não encolhe abaixo do conteúdo e a
+        // tabela larga empurra a página em vez de rolar dentro do card.
+        <div class="panel p-4 min-w-0">
           <div class="flex items-center gap-3 mb-2">
             {en.portrait && (
               <img
@@ -79,7 +82,10 @@ const COR: Record<string, string> = { Gray: 'Cinza', Blue: 'Azul', Purple: 'Roxo
               <span class="text-text-muted">Sem resistência/fraqueza elemental</span>
             )}
           </div>
-          <table class="w-full text-xs">
+          {/* 7 colunas não cabem num celular estreito; rolar a tabela é melhor
+              do que empurrar a página inteira pro lado. */}
+          <div class="overflow-x-auto -mx-1 px-1">
+          <table class="w-full text-xs min-w-[20rem]">
             <thead>
               <tr class="text-text-muted">
                 <th class="text-left font-medium py-1">Variante</th>
@@ -95,16 +101,17 @@ const COR: Record<string, string> = { Gray: 'Cinza', Blue: 'Azul', Purple: 'Roxo
               {en.variants.map((v) => (
                 <tr class="border-t border-copper/40">
                   <td class="py-1">{COR[v.color] ?? v.color}</td>
-                  <td class="text-right">{v.hp}</td>
-                  <td class="text-right">{v.atk}</td>
-                  <td class="text-right">{v.def}</td>
-                  <td class="text-right">{v.crit}%</td>
-                  <td class="text-right">{v.parry}%</td>
-                  <td class="text-right">{v.xpBase}</td>
+                  <td class="text-right tabular-nums">{num(v.hp)}</td>
+                  <td class="text-right tabular-nums">{num(v.atk)}</td>
+                  <td class="text-right tabular-nums">{num(v.def)}</td>
+                  <td class="text-right tabular-nums">{pct(v.crit)}</td>
+                  <td class="text-right tabular-nums">{pct(v.parry)}</td>
+                  <td class="text-right tabular-nums">{num(v.xpBase)}</td>
                 </tr>
               ))}
             </tbody>
           </table>
+          </div>
         </div>
       ))
     }

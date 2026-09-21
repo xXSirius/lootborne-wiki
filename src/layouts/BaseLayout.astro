@@ -131,19 +131,25 @@ const groups = [
       <div class="max-w-[1320px] mx-auto px-3 h-14 flex items-center gap-3">
         <button
           id="nav-toggle"
-          class="lg:hidden text-gold text-xl leading-none px-1"
-          aria-label="Abrir menu">☰</button
+          class="lg:hidden shrink-0 text-gold text-xl leading-none w-11 h-11 -ml-1 grid place-items-center"
+          aria-label="Abrir menu"
+          aria-controls="sidebar"
+          aria-expanded="false">☰</button
         >
-        <a href={withBase('/')} class="flex items-center gap-2.5 shrink-0 panel-deep px-2.5 py-1.5">
+        <a
+          href={withBase('/')}
+          class="flex items-center gap-2.5 shrink-0 panel-deep px-2.5 py-1.5"
+          aria-label="Lootborne Wiki — início"
+        >
           <img src={withBase('/ui/nav-perks.png')} alt="" width="20" height="20" class="pixel" />
-          <span class="leading-tight">
+          <span class="leading-tight hidden sm:block">
             <span class="block font-display text-gold-bright text-sm tracking-wider">LOOTBORNE</span>
             <span class="block text-[0.6rem] text-text-muted uppercase tracking-wider">
               Wiki pessoal
             </span>
           </span>
         </a>
-        <div class="ml-auto relative w-full max-w-md">
+        <div class="ml-auto relative w-full min-w-0 max-w-md">
           <input
             id="global-search"
             type="search"
@@ -160,13 +166,20 @@ const groups = [
       </div>
     </header>
 
+    <div id="nav-scrim" class="hidden"></div>
+
     <div class="max-w-[1320px] mx-auto flex gap-4 px-3 py-4 items-start">
-      <aside id="sidebar" class="hidden lg:block w-56 shrink-0 panel sticky top-[4.5rem]">
+      <aside id="sidebar" class="w-56 shrink-0 panel sticky top-[4.5rem]" data-open="false">
         <div class="panel-head">
           <img src={withBase('/ui/nav-manual.png')} alt="" width="14" height="14" class="pixel" />
           Menu
+          <button
+            id="nav-close"
+            class="lg:hidden ml-auto text-gold text-lg leading-none w-8 h-8 grid place-items-center"
+            aria-label="Fechar menu">✕</button
+          >
         </div>
-        <nav class="py-2 max-h-[calc(100vh-9rem)] overflow-y-auto">
+        <nav class="py-2 lg:max-h-[calc(100vh-9rem)] overflow-y-auto">
           {
             groups.map((g) => (
               <div class="mb-3">
@@ -244,8 +257,32 @@ const groups = [
         if (!panel.contains(e.target) && e.target !== input) panel.classList.add('hidden');
       });
 
-      document.getElementById('nav-toggle')?.addEventListener('click', () => {
-        document.getElementById('sidebar')?.classList.toggle('hidden');
+      // Gaveta de navegação (abaixo de lg). O CSS cuida da animação e do
+      // scroll travado; aqui só o estado e as formas de fechar.
+      const sidebar = document.getElementById('sidebar');
+      const scrim = document.getElementById('nav-scrim');
+      const toggle = document.getElementById('nav-toggle');
+
+      function setMenu(open) {
+        sidebar.dataset.open = String(open);
+        scrim.classList.toggle('hidden', !open);
+        toggle.setAttribute('aria-expanded', String(open));
+        if (open) sidebar.querySelector('.nav-link')?.focus();
+      }
+
+      toggle?.addEventListener('click', () => setMenu(sidebar.dataset.open !== 'true'));
+      document.getElementById('nav-close')?.addEventListener('click', () => setMenu(false));
+      scrim?.addEventListener('click', () => setMenu(false));
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && sidebar.dataset.open === 'true') {
+          setMenu(false);
+          toggle.focus();
+        }
+      });
+      // Navegar fecha a gaveta — inclusive nos links com âncora, que não
+      // trocam de página e deixariam o menu aberto por cima do conteúdo.
+      sidebar?.addEventListener('click', (e) => {
+        if (e.target.closest('a')) setMenu(false);
       });
     </script>
   </body>

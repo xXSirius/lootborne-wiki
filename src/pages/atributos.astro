@@ -20,10 +20,10 @@ const parryCurve = [3, 15, 25, 35, 45, 55].map((p) => ({ p, ehp: 1 / (1 - p / 10
   description="Onde investir os 5 pontos por nível em Lootborne: o que cada atributo faz, onde estão os tetos e o que os próprios testes do desenvolvedor indicam."
 >
   <header class="mb-8 max-w-3xl">
-    <h1 class="font-display text-3xl md:text-4xl font-semibold mb-3">Onde colocar seus pontos</h1>
+    <h1 class="page-title mb-3">Onde colocar seus pontos</h1>
     <p class="text-text-soft">
       Cada nível dá pontos pra distribuir entre <strong class="text-text-main">HP, ATK, DEF, CRIT e
-      PARRY</strong>. O jogo guarda isso em campos separados (<code>allocatedHp</code>,{' '}
+      BLOQUEIO</strong>. O jogo guarda isso em campos separados (<code>allocatedHp</code>,{' '}
       <code>allocatedAtk</code>…) e tem respec pago — então erro não é permanente. O que está abaixo
       é a lógica de cada atributo derivada das constantes reais de combate.
     </p>
@@ -40,7 +40,7 @@ const parryCurve = [3, 15, 25, 35, 45, 55].map((p) => ({ p, ehp: 1 / (1 - p / 10
   </div>
 
   <section class="mb-12">
-    <h2 class="font-display text-2xl font-semibold mb-4">A regra que mais importa: os tetos</h2>
+    <h2 class="section-title text-gold-bright mb-4">A regra que mais importa: os tetos</h2>
     <div class="grid sm:grid-cols-2 gap-4 mb-4">
       <div class="panel p-5">
         <div class="text-3xl font-display text-mythic mb-1">{c.CRIT_CAP}%</div>
@@ -54,22 +54,22 @@ const parryCurve = [3, 15, 25, 35, 45, 55].map((p) => ({ p, ehp: 1 / (1 - p / 10
       </div>
       <div class="panel p-5">
         <div class="text-3xl font-display text-rare mb-1">{c.PARRY_CAP}%</div>
-        <div class="font-semibold mb-1">Teto de PARRY</div>
+        <div class="font-semibold mb-1">Teto de BLOQUEIO</div>
         <p class="text-text-soft text-sm">
-          Mesma coisa: acima de {c.PARRY_CAP}% não rende nada. Lembre que itens também dão PARRY —
+          Mesma coisa: acima de {c.PARRY_CAP}% não rende nada. Lembre que itens também dão BLOQUEIO —
           conte o total, não só o alocado.
         </p>
       </div>
     </div>
     <p class="text-text-soft text-sm max-w-3xl">
       HP, ATK e DEF <strong class="text-text-main">não têm teto</strong>. Isso por si só já muda a
-      estratégia de fim de jogo: CRIT e PARRY são investimentos que "enchem" e param; os outros três
+      estratégia de fim de jogo: CRIT e BLOQUEIO são investimentos que "enchem" e param; os outros três
       absorvem pontos pra sempre.
     </p>
   </section>
 
   <section class="mb-12">
-    <h2 class="font-display text-2xl font-semibold mb-2">CRIT: linear e fácil de calcular</h2>
+    <h2 class="section-title text-gold-bright mb-2">CRIT: linear e fácil de calcular</h2>
     <p class="text-text-soft max-w-3xl mb-4">
       Crítico multiplica o dano por <code>{c.CRIT_MULTIPLIER}×</code>. Como o multiplicador é
       exatamente 2, cada <strong class="text-text-main">+1% de CRIT = +1% de dano médio</strong>. Você
@@ -79,7 +79,7 @@ const parryCurve = [3, 15, 25, 35, 45, 55].map((p) => ({ p, ehp: 1 / (1 - p / 10
   </section>
 
   <section class="mb-12">
-    <h2 class="font-display text-2xl font-semibold mb-2">DEF: a pegadinha boa</h2>
+    <h2 class="section-title text-gold-bright mb-2">DEF: a pegadinha boa</h2>
     <p class="text-text-soft max-w-3xl mb-4">
       Aqui mora o erro mais comum. Olhando a <em>porcentagem de dano reduzido</em>, DEF parece ter
       retorno decrescente e "travar". Mas o que te mantém vivo não é a porcentagem, é o
@@ -128,16 +128,16 @@ const parryCurve = [3, 15, 25, 35, 45, 55].map((p) => ({ p, ehp: 1 / (1 - p / 10
   </section>
 
   <section class="mb-12">
-    <h2 class="font-display text-2xl font-semibold mb-2">PARRY: cresce cada vez mais até bater no teto</h2>
+    <h2 class="section-title text-gold-bright mb-2">BLOQUEIO: cresce cada vez mais até bater no teto</h2>
     <p class="text-text-soft max-w-3xl mb-4">
-      Se parry anula o golpe, o ganho é <code>1 / (1 − parry)</code> — ou seja, quanto mais parry você
+      Se bloqueio anula o golpe, o ganho é <code>1 / (1 − bloqueio)</code> — ou seja, quanto mais bloqueio você
       tem, mais cada ponto novo vale. O teto de {c.PARRY_CAP}% existe justamente porque a curva
       explodiria:
     </p>
     <div class="panel overflow-x-auto mb-4">
       <table class="data-table">
         <thead>
-          <tr><th>PARRY</th><th>HP efetivo</th><th>Ganho do último passo</th></tr>
+          <tr><th>BLOQUEIO</th><th>HP efetivo</th><th>Ganho do último passo</th></tr>
         </thead>
         <tbody>
           {
@@ -164,7 +164,7 @@ const parryCurve = [3, 15, 25, 35, 45, 55].map((p) => ({ p, ehp: 1 / (1 - p / 10
   </section>
 
   <section class="mb-12">
-    <h2 class="font-display text-2xl font-semibold mb-2">O que os testes do próprio dev dizem</h2>
+    <h2 class="section-title text-gold-bright mb-2">O que os testes do próprio dev dizem</h2>
     <div class="panel p-5 max-w-3xl">
       <p class="text-text-soft text-sm mb-3">
         O jogo carrega um harness de QA interno com asserções em italiano. Uma delas é literalmente:
@@ -183,12 +183,12 @@ const parryCurve = [3, 15, 25, 35, 45, 55].map((p) => ({ p, ehp: 1 / (1 - p / 10
   </section>
 
   <section>
-    <h2 class="font-display text-2xl font-semibold mb-3">Resumo prático</h2>
+    <h2 class="section-title text-gold-bright mb-3">Resumo prático</h2>
     <div class="grid md:grid-cols-2 gap-4">
       <div class="panel p-5">
         <h3 class="font-semibold text-lg mb-2 text-gold-bright">Faça</h3>
         <ul class="text-text-soft text-sm space-y-1.5 list-disc list-inside">
-          <li>Trate CRIT e PARRY como <strong class="text-text-main">metas</strong>: leve até o teto contando o que os itens já dão, e pare</li>
+          <li>Trate CRIT e BLOQUEIO como <strong class="text-text-main">metas</strong>: leve até o teto contando o que os itens já dão, e pare</li>
           <li>Despeje o excedente em DEF — é o único defensivo que nunca satura</li>
           <li>Recalcule o total (alocado + itens) toda vez que trocar de equipamento, pra não passar do teto sem perceber</li>
           <li>Use o respec quando mudar de estratégia; ele existe e custa moeda, não é definitivo</li>
@@ -198,7 +198,7 @@ const parryCurve = [3, 15, 25, 35, 45, 55].map((p) => ({ p, ehp: 1 / (1 - p / 10
         <h3 class="font-semibold text-lg mb-2 text-mythic">Evite</h3>
         <ul class="text-text-soft text-sm space-y-1.5 list-disc list-inside">
           <li>Passar de {c.CRIT_CAP}% de CRIT sem ter o perk Critical Apex — é ponto perdido</li>
-          <li>Passar de {c.PARRY_CAP}% de PARRY em qualquer situação</li>
+          <li>Passar de {c.PARRY_CAP}% de BLOQUEIO em qualquer situação</li>
           <li>Julgar DEF pela porcentagem de redução — ela engana, olhe o HP efetivo</li>
           <li>Ignorar que o Power Score do jogo pesa ATK {(c.PS_ATK_WEIGHT / c.PS_HP_WEIGHT).toFixed(0)}× mais que HP: um número alto de PS não significa que você sobrevive mais</li>
         </ul>

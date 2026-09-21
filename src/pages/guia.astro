@@ -50,7 +50,7 @@ const secondsPerBattle = c.STAMINA_COST_PER_BATTLE / c.STAMINA_REGEN_PER_SEC;
   description="O que fazer em Lootborne pra evoluir rápido: rotina de farm, escolha de elemento por setor, erros que custam progresso."
 >
   <header class="mb-10 max-w-3xl">
-    <h1 class="font-display text-3xl md:text-4xl font-semibold mb-3">Guia do jogador</h1>
+    <h1 class="page-title mb-3">Guia do jogador</h1>
     <p class="text-text-soft">
       A parte prática: o que fazer, em que ordem, e onde o jogo silenciosamente te pune. Tudo aqui sai
       dos números reais — as páginas de{' '}
@@ -60,7 +60,7 @@ const secondsPerBattle = c.STAMINA_COST_PER_BATTLE / c.STAMINA_REGEN_PER_SEC;
   </header>
 
   <section class="mb-12">
-    <h2 class="font-display text-2xl font-semibold mb-4">Os 4 erros que mais custam progresso</h2>
+    <h2 class="section-title text-gold-bright mb-4">Os 4 erros que mais custam progresso</h2>
     <div class="grid md:grid-cols-2 gap-4">
       <div class="panel p-5 border-mythic/30">
         <h3 class="font-semibold mb-1.5">1. Deixar o inventário lotar</h3>
@@ -82,9 +82,9 @@ const secondsPerBattle = c.STAMINA_COST_PER_BATTLE / c.STAMINA_REGEN_PER_SEC;
         </p>
       </div>
       <div class="panel p-5 border-mythic/30">
-        <h3 class="font-semibold mb-1.5">3. Passar do teto de CRIT ou PARRY</h3>
+        <h3 class="font-semibold mb-1.5">3. Passar do teto de CRIT ou BLOQUEIO</h3>
         <p class="text-text-soft text-sm">
-          CRIT para de valer em {c.CRIT_CAP}% e PARRY em {c.PARRY_CAP}%. Como itens também dão esses
+          CRIT para de valer em {c.CRIT_CAP}% e BLOQUEIO em {c.PARRY_CAP}%. Como itens também dão esses
           atributos, dá pra ultrapassar sem perceber e perder pontos. Confira o total sempre que trocar
           equipamento.
         </p>
@@ -102,7 +102,7 @@ const secondsPerBattle = c.STAMINA_COST_PER_BATTLE / c.STAMINA_REGEN_PER_SEC;
   </section>
 
   <section class="mb-12">
-    <h2 class="font-display text-2xl font-semibold mb-2">Qual elemento levar em cada setor</h2>
+    <h2 class="section-title text-gold-bright mb-2">Qual elemento levar em cada setor</h2>
     <p class="text-text-soft max-w-3xl mb-3">
       Cada inimigo tem resistência e fraqueza elemental próprias (<code class="text-amber"
         >{(c.ENEMY_RESIST_PCT * 100).toFixed(0)}%</code
@@ -113,7 +113,7 @@ const secondsPerBattle = c.STAMINA_COST_PER_BATTLE / c.STAMINA_REGEN_PER_SEC;
     </p>
     <div class="panel p-3 mb-4 max-w-3xl border-gold">
       <p class="text-sm text-text-soft leading-relaxed">
-        <strong class="text-gold">Antes de montar o build:</strong> 
+        <strong class="text-gold">Antes de montar o build:</strong> o manual do jogo diz que{' '}
         <strong class="text-text-main">só a arma equipada</strong> conta para resistência e fraqueza —
         "os outros slots de equipamento não contam". Ou seja, encher elmo, corpo, cinto, anel e
         amuleto de Gelo não aumenta seu dano de Gelo contra quem é fraco a Gelo. O elemento dos
@@ -184,7 +184,7 @@ const secondsPerBattle = c.STAMINA_COST_PER_BATTLE / c.STAMINA_REGEN_PER_SEC;
   </section>
 
   <section class="mb-12">
-    <h2 class="font-display text-2xl font-semibold mb-2">A rotina que rende mais</h2>
+    <h2 class="section-title text-gold-bright mb-2">A rotina que rende mais</h2>
     <div class="grid md:grid-cols-3 gap-4 mb-4">
       <div class="panel p-5">
         <div class="text-2xl font-display text-gold-bright mb-1">{staminaBurst}</div>
@@ -233,7 +233,7 @@ const secondsPerBattle = c.STAMINA_COST_PER_BATTLE / c.STAMINA_REGEN_PER_SEC;
   </section>
 
   <section class="mb-12">
-    <h2 class="font-display text-2xl font-semibold mb-3">Marcos de progressão</h2>
+    <h2 class="section-title text-gold-bright mb-3">Marcos de progressão</h2>
     <div class="panel overflow-x-auto">
       <table class="data-table">
         <thead>
@@ -255,7 +255,7 @@ const secondsPerBattle = c.STAMINA_COST_PER_BATTLE / c.STAMINA_REGEN_PER_SEC;
   </section>
 
   <section class="mb-12">
-    <h2 class="font-display text-2xl font-semibold mb-2">Os 4 chefes de PvP</h2>
+    <h2 class="section-title text-gold-bright mb-2">Os 4 chefes de PvP</h2>
     <p class="text-text-soft max-w-3xl mb-4">
       Existem exatamente <strong class="text-text-main">4 itens no jogo marcados como exclusivos de
       chefe</strong> — e batem com os 4 conjuntos de sprite de chefe encontrados nos arquivos
@@ -297,7 +297,7 @@ const secondsPerBattle = c.STAMINA_COST_PER_BATTLE / c.STAMINA_REGEN_PER_SEC;
   </section>
 
   <section>
-    <h2 class="font-display text-2xl font-semibold mb-3">Economia: o que fazer com item repetido</h2>
+    <h2 class="section-title text-gold-bright mb-3">Economia: o que fazer com item repetido</h2>
     <div class="grid md:grid-cols-2 gap-4 max-w-4xl">
       <div class="panel p-5">
         <h3 class="font-semibold mb-1.5">Desmontar</h3>
