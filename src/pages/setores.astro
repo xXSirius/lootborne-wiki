@@ -1,0 +1,94 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import sectors from '../data/sectors.json';
+import { rarityLabel, rarityColor } from '../lib/labels';
+import { withBase } from '../lib/base';
+
+const dropRows = (s: (typeof sectors)[number]) =>
+  (
+    [
+      ['Common', s.dropRates.common],
+      ['Rare', s.dropRates.rare],
+      ['Epic', s.dropRates.epic],
+      ['Legendary', s.dropRates.legendary],
+      ['Mythic', s.dropRates.mythic],
+    ] as [string, number][]
+  ).filter(([, pct]) => pct > 0);
+---
+
+<BaseLayout
+  title="Setores"
+  banner="Mundo"
+  description="Os 7 setores de Lootborne — inimigos, tabela de drop por raridade e recompensa de clear."
+>
+  <header class="mb-5">
+    <h1 class="font-display text-3xl md:text-4xl text-gold-bright mb-3">{sectors.length} setores</h1>
+    <p class="text-text-soft max-w-3xl text-sm leading-relaxed">
+      Cada setor tem sua própria tabela de drop por raridade (as porcentagens somam 100) e uma
+      recompensa garantida ao limpar pela primeira vez. Os nomes são os da tradução oficial do jogo.
+    </p>
+  </header>
+
+  <div class="space-y-4">
+    {
+      sectors.map((s) => (
+        <div class="panel">
+          <div class="panel-head flex-wrap justify-between">
+            <span class="flex items-center gap-2">
+              <img src={withBase('/ui/nav-setores.png')} alt="" width="14" height="14" class="pixel" />
+              Setor {s.id} — {s.namePt}
+            </span>
+            <span class="text-xs normal-case tracking-normal text-text-soft">
+              {s.totalEnemies} inimigos até liberar o chefe
+            </span>
+          </div>
+
+          <div class="grid md:grid-cols-2 gap-5 p-5">
+            <div>
+              <div class="text-xs text-gold uppercase tracking-wider mb-1.5">Inimigos</div>
+              <div class="flex flex-wrap gap-1.5">
+                {s.enemiesPt.map((name) => (
+                  <span class="chip cursor-default">{name}</span>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <div class="text-xs text-gold uppercase tracking-wider mb-1.5">Drop por raridade</div>
+              <div class="flex h-4 overflow-hidden border border-copper">
+                {dropRows(s).map(([name, pct]) => (
+                  <div
+                    style={{ width: `${pct}%`, background: rarityColor(name) }}
+                    title={`${rarityLabel(name)}: ${pct}%`}
+                  />
+                ))}
+              </div>
+              <div class="flex flex-wrap gap-x-3 gap-y-1 mt-2 text-xs text-text-soft">
+                {dropRows(s).map(([name, pct]) => (
+                  <span>
+                    <span style={{ color: rarityColor(name) }}>{rarityLabel(name)}</span> {pct}%
+                  </span>
+                ))}
+              </div>
+              <div class="mt-3 text-xs text-text-soft space-y-0.5">
+                <div>
+                  Recompensa ao limpar:{' '}
+                  <span style={{ color: rarityColor(s.clearRewardRarity) }}>
+                    {rarityLabel(s.clearRewardRarity)}
+                  </span>{' '}
+                  garantido
+                </div>
+                <div>
+                  Teto de drop por level-up:{' '}
+                  <span style={{ color: rarityColor(s.levelUpRarityCap) }}>
+                    {rarityLabel(s.levelUpRarityCap)}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      ))
+    }
+  </div>
+</BaseLayout>

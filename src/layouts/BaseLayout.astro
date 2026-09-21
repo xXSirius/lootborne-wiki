@@ -1,0 +1,252 @@
+---
+import '../styles/global.css';
+import items from '../data/items.json';
+import enemies from '../data/enemies.json';
+import sectors from '../data/sectors.json';
+import perks from '../data/perks.json';
+import consumables from '../data/consumables.json';
+import { withBase } from '../lib/base';
+
+interface Props {
+  title: string;
+  description?: string;
+  banner?: string;
+}
+
+const {
+  title,
+  description = 'Wiki pessoal de Lootborne — dados reais extraídos do jogo.',
+  banner,
+} = Astro.props;
+
+const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+
+// Indice de busca global — nome em pt-BR + destino, pequeno o bastante pra ir inline.
+const searchIndex = [
+  ...items.map((i) => ({
+    n: i.namePt,
+    u: withBase(`/itens?q=${encodeURIComponent(i.namePt)}`),
+    t: i.rarity,
+  })),
+  ...enemies.map((e) => ({ n: e.namePt, u: withBase('/inimigos'), t: 'Inimigo' })),
+  ...perks.perks.map((p) => ({ n: p.name, u: withBase('/perks-pocoes'), t: 'Perk' })),
+  ...consumables.consumables.map((p) => ({
+    n: p.name,
+    u: withBase('/perks-pocoes#pocoes'),
+    t: 'Poção',
+  })),
+  ...sectors.map((s) => ({ n: s.namePt, u: withBase('/setores'), t: 'Setor' })),
+];
+
+// href e icon já saem prefixados com o base — é o único lugar onde essas
+// rotas/ícones são declarados, então o resto do layout só consome o valor.
+const groups = [
+  {
+    label: 'Começar',
+    links: [
+      { href: withBase('/'), label: 'Início', icon: withBase('/ui/nav-inventario.png') },
+      { href: withBase('/guia'), label: 'Guia do jogador', icon: withBase('/ui/nav-guia.png') },
+      {
+        href: withBase('/atributos'),
+        label: 'Atributos & pontos',
+        icon: withBase('/ui/nav-atributos.png'),
+      },
+    ],
+  },
+  {
+    label: 'Equipamento',
+    links: [
+      { href: withBase('/itens'), label: 'Itens', icon: withBase('/ui/nav-itens.png'), count: items.length },
+    ],
+  },
+  {
+    label: 'Mundo',
+    links: [
+      {
+        href: withBase('/setores'),
+        label: 'Setores',
+        icon: withBase('/ui/nav-setores.png'),
+        count: sectors.length,
+      },
+      {
+        href: withBase('/inimigos'),
+        label: 'Inimigos',
+        icon: withBase('/ui/nav-inimigos.png'),
+        count: enemies.length,
+      },
+    ],
+  },
+  {
+    label: 'Poder',
+    links: [
+      {
+        href: withBase('/perks-pocoes'),
+        label: 'Perks',
+        icon: withBase('/ui/nav-perks.png'),
+        count: perks.perks.length,
+      },
+      {
+        href: withBase('/perks-pocoes#pocoes'),
+        label: 'Poções',
+        icon: withBase('/icons/consumables/Bastion.png'),
+        count: consumables.consumables.length,
+      },
+      { href: withBase('/mecanicas'), label: 'Mecânicas', icon: withBase('/ui/nav-mecanicas.png') },
+    ],
+  },
+  {
+    label: 'Referência',
+    links: [
+      { href: withBase('/manual'), label: 'Manual do jogo', icon: withBase('/ui/nav-manual.png') },
+      {
+        href: withBase('/calculadora'),
+        label: 'Calculadora',
+        icon: withBase('/ui/nav-calculadora.png'),
+      },
+    ],
+  },
+];
+---
+
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title} | Lootborne Wiki</title>
+    <meta name="description" content={description} />
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="icon" href={withBase('/ui/nav-perks.png')} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="font-sans min-h-screen">
+    <div class="backdrop"></div>
+
+    <header class="sticky top-0 z-40 bg-panel-head/95 border-b border-copper backdrop-blur-sm">
+      <div class="max-w-[1320px] mx-auto px-3 h-14 flex items-center gap-3">
+        <button
+          id="nav-toggle"
+          class="lg:hidden text-gold text-xl leading-none px-1"
+          aria-label="Abrir menu">☰</button
+        >
+        <a href={withBase('/')} class="flex items-center gap-2.5 shrink-0 panel-deep px-2.5 py-1.5">
+          <img src={withBase('/ui/nav-perks.png')} alt="" width="20" height="20" class="pixel" />
+          <span class="leading-tight">
+            <span class="block font-display text-gold-bright text-sm tracking-wider">LOOTBORNE</span>
+            <span class="block text-[0.6rem] text-text-muted uppercase tracking-wider">
+              Wiki pessoal
+            </span>
+          </span>
+        </a>
+        <div class="ml-auto relative w-full max-w-md">
+          <input
+            id="global-search"
+            type="search"
+            placeholder="Buscar item, inimigo, perk..."
+            class="w-full bg-deep border border-copper px-3 py-1.5 text-sm rounded-sm focus:outline-none focus:border-gold"
+            autocomplete="off"
+          />
+          <div
+            id="search-results"
+            class="hidden absolute right-0 top-10 w-full panel max-h-80 overflow-y-auto z-50 shadow-2xl"
+          >
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="max-w-[1320px] mx-auto flex gap-4 px-3 py-4 items-start">
+      <aside id="sidebar" class="hidden lg:block w-56 shrink-0 panel sticky top-[4.5rem]">
+        <div class="panel-head">
+          <img src={withBase('/ui/nav-manual.png')} alt="" width="14" height="14" class="pixel" />
+          Menu
+        </div>
+        <nav class="py-2 max-h-[calc(100vh-9rem)] overflow-y-auto">
+          {
+            groups.map((g) => (
+              <div class="mb-3">
+                <div class="nav-group">{g.label}</div>
+                {g.links.map((l) => (
+                  <a
+                    href={l.href}
+                    class="nav-link"
+                    aria-current={
+                      path === (l.href.split('#')[0].replace(/\/$/, '') || '/') ? 'page' : undefined
+                    }
+                  >
+                    <img src={l.icon} alt="" width="14" height="14" />
+                    <span>{l.label}</span>
+                    {l.count && <span class="ml-auto text-[0.65rem] text-text-muted">{l.count}</span>}
+                  </a>
+                ))}
+              </div>
+            ))
+          }
+        </nav>
+      </aside>
+
+      <main class="flex-1 min-w-0">
+        {
+          banner && (
+            <div class="banner mb-5">
+              <span>{banner}</span>
+            </div>
+          )
+        }
+        <slot />
+      </main>
+    </div>
+
+    <footer class="border-t border-copper mt-8 bg-panel-head/80">
+      <div class="max-w-[1320px] mx-auto px-4 py-5 text-xs text-text-muted">
+        Wiki pessoal e não-oficial, sem vínculo com a desenvolvedora do Lootborne. Dados e arte de
+        interface extraídos dos arquivos do jogo para referência própria. Textos em português são os
+        do próprio jogo (<code>Resources/localization/pt-BR.json</code>).
+      </div>
+    </footer>
+
+    <script define:vars={{ searchIndex }}>
+      const input = document.getElementById('global-search');
+      const panel = document.getElementById('search-results');
+
+      function render(matches) {
+        if (matches.length === 0) {
+          panel.classList.add('hidden');
+          return;
+        }
+        panel.innerHTML = matches
+          .map(
+            (m) =>
+              `<a href="${m.u}" class="flex items-center justify-between gap-3 px-3 py-2 text-sm hover:bg-deep border-b border-copper/40 last:border-0">
+                 <span>${m.n}</span>
+                 <span class="text-[0.65rem] text-text-muted uppercase tracking-wide shrink-0">${m.t}</span>
+               </a>`
+          )
+          .join('');
+        panel.classList.remove('hidden');
+      }
+
+      input?.addEventListener('input', () => {
+        const q = input.value.trim().toLowerCase();
+        if (q.length < 2) {
+          panel.classList.add('hidden');
+          return;
+        }
+        render(searchIndex.filter((e) => e.n.toLowerCase().includes(q)).slice(0, 12));
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!panel.contains(e.target) && e.target !== input) panel.classList.add('hidden');
+      });
+
+      document.getElementById('nav-toggle')?.addEventListener('click', () => {
+        document.getElementById('sidebar')?.classList.toggle('hidden');
+      });
+    </script>
+  </body>
+</html>

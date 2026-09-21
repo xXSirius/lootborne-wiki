@@ -1,0 +1,112 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import enemies from '../data/enemies.json';
+import { elementLabel, elementColor, elementIcon } from '../lib/labels';
+import { withBase } from '../lib/base';
+
+const sorted = [...enemies].sort((a, b) => a.variants[0].level - b.variants[0].level);
+
+// As variantes vem em ingles no asset; sao so' o nome da cor.
+const COR: Record<string, string> = { Gray: 'Cinza', Blue: 'Azul', Purple: 'Roxo' };
+---
+
+<BaseLayout
+  title="Inimigos"
+  banner="Bestiário"
+  description="Bestiário de Lootborne — stats reais por variante e resistências elementais de cada inimigo."
+>
+  <header class="mb-5">
+    <h1 class="font-display text-3xl md:text-4xl text-gold-bright mb-3">
+      {enemies.length} inimigos
+    </h1>
+    <p class="text-text-soft max-w-3xl text-sm leading-relaxed">
+      Cada tipo de inimigo tem 3 variantes de cor (Cinza → Azul → Roxo) com atributos crescentes — a
+      cor indica a versão dentro do mesmo setor/faixa de nível, não uma escala global. Resistência
+      reduz e fraqueza aumenta o dano daquele elemento em{' '}
+      <strong class="text-text-main">15%</strong> (<code class="text-amber"
+        >ENEMY_RESIST_PCT = 0.15</code
+      >).
+    </p>
+    <p class="text-text-soft max-w-3xl text-sm leading-relaxed mt-2">
+      <strong class="text-gold">Detalhe que muda tudo:</strong> segundo o manual do jogo, só{' '}
+      <strong class="text-text-main">as armas equipadas</strong> contam para resistência e fraqueza —
+      elmo, corpo, cinto, anel e amuleto do mesmo elemento não entram nessa conta. A
+      <a href={withBase('/guia')} class="text-gold hover:underline">página de guia</a> traz o cruzamento pronto
+      de qual elemento levar em cada setor.
+    </p>
+  </header>
+
+  <div class="grid md:grid-cols-2 gap-4">
+    {
+      sorted.map((en) => (
+        <div class="panel p-4">
+          <div class="flex items-center gap-3 mb-2">
+            {en.portrait && (
+              <img
+                src={withBase(`/icons/enemies/${en.portrait}`)}
+                alt=""
+                width="40"
+                height="40"
+                loading="lazy"
+                class="pixel h-10 w-auto max-w-[3rem] object-contain shrink-0"
+              />
+            )}
+            <h2 class="font-semibold text-gold-bright">{en.namePt}</h2>
+            <div class="text-xs text-text-muted ml-auto">
+              nível {en.variants[0].level}–{en.variants[en.variants.length - 1].level}
+            </div>
+          </div>
+          <div class="flex flex-wrap gap-3 text-xs mb-3 items-center">
+            {en.resistElement !== 'None' && (
+              <span class="inline-flex items-center gap-1" style={{ color: elementColor(en.resistElement) }}>
+                <img src={elementIcon(en.resistElement)} alt="" width="10" height="10" class="pixel" />
+                Resiste: {elementLabel(en.resistElement)}
+              </span>
+            )}
+            {en.resistElement2 !== 'None' && (
+              <span class="inline-flex items-center gap-1" style={{ color: elementColor(en.resistElement2) }}>
+                <img src={elementIcon(en.resistElement2)} alt="" width="10" height="10" class="pixel" />+
+                {elementLabel(en.resistElement2)}
+              </span>
+            )}
+            {en.weakElement !== 'None' && (
+              <span class="inline-flex items-center gap-1" style={{ color: elementColor(en.weakElement) }}>
+                <img src={elementIcon(en.weakElement)} alt="" width="10" height="10" class="pixel" />
+                Fraco: {elementLabel(en.weakElement)}
+              </span>
+            )}
+            {en.resistElement === 'None' && en.weakElement === 'None' && (
+              <span class="text-text-muted">Sem resistência/fraqueza elemental</span>
+            )}
+          </div>
+          <table class="w-full text-xs">
+            <thead>
+              <tr class="text-text-muted">
+                <th class="text-left font-medium py-1">Variante</th>
+                <th class="text-right font-medium">PV</th>
+                <th class="text-right font-medium">ATK</th>
+                <th class="text-right font-medium">DEF</th>
+                <th class="text-right font-medium">CRIT</th>
+                <th class="text-right font-medium">BLOQ</th>
+                <th class="text-right font-medium">XP</th>
+              </tr>
+            </thead>
+            <tbody>
+              {en.variants.map((v) => (
+                <tr class="border-t border-copper/40">
+                  <td class="py-1">{COR[v.color] ?? v.color}</td>
+                  <td class="text-right">{v.hp}</td>
+                  <td class="text-right">{v.atk}</td>
+                  <td class="text-right">{v.def}</td>
+                  <td class="text-right">{v.crit}%</td>
+                  <td class="text-right">{v.parry}%</td>
+                  <td class="text-right">{v.xpBase}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ))
+    }
+  </div>
+</BaseLayout>

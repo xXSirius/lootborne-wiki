@@ -1,0 +1,260 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import items from '../data/items.json';
+import {
+  ORDEM_RARIDADE,
+  ORDEM_SLOT,
+  ORDEM_ELEMENTO,
+  rarityLabel,
+  slotLabel,
+  elementLabel,
+  rarityColor,
+  elementColor,
+  elementIcon,
+} from '../lib/labels';
+import { withBase } from '../lib/base';
+---
+
+<BaseLayout
+  title="Itens"
+  banner="Itens"
+  description="Os 424 itens de Lootborne — atributos, raridade, elemento, efeitos e ícones extraídos direto do jogo."
+>
+  <header class="mb-5">
+    <h1 class="font-display text-3xl md:text-4xl text-gold-bright mb-2">{items.length} itens</h1>
+    <p class="text-text-soft max-w-3xl text-sm leading-relaxed">
+      Todo o loot do jogo, com atributos e efeitos exatos. Filtre por raridade, slot ou elemento — ou
+      busque por um trecho do efeito (ex: "crítico", "bloquear", "Vigor"). Os nomes são os da
+      tradução oficial do jogo.
+    </p>
+  </header>
+
+  <section class="panel mb-4">
+    <div class="panel-head text-xs">Filtros</div>
+    <dl class="px-4 py-2">
+      <div class="filter-row">
+        <dt>Raridade</dt>
+        <dd class="flex flex-wrap gap-1.5">
+          <button class="chip" data-filter="rarity" data-value="" data-active="true">Todas</button>
+          {
+            ORDEM_RARIDADE.map((r) => (
+              <button
+                class="chip"
+                data-filter="rarity"
+                data-value={r}
+                style={`--chip-color: ${rarityColor(r)}`}
+              >
+                {rarityLabel(r)}
+              </button>
+            ))
+          }
+        </dd>
+      </div>
+
+      <div class="filter-row">
+        <dt>Slot</dt>
+        <dd class="flex flex-wrap gap-1.5">
+          <button class="chip" data-filter="slot" data-value="" data-active="true">Todos</button>
+          {
+            ORDEM_SLOT.map((s) => (
+              <button class="chip" data-filter="slot" data-value={s}>
+                {slotLabel(s)}
+              </button>
+            ))
+          }
+        </dd>
+      </div>
+
+      <div class="filter-row">
+        <dt>Elemento</dt>
+        <dd class="flex flex-wrap gap-1.5">
+          <button class="chip" data-filter="element" data-value="" data-active="true">Todos</button>
+          {
+            ORDEM_ELEMENTO.map((e) => (
+              <button
+                class="chip inline-flex items-center gap-1"
+                data-filter="element"
+                data-value={e}
+                style={`--chip-color: ${elementColor(e)}`}
+              >
+                {elementIcon(e) && (
+                  <img src={elementIcon(e)} alt="" width="10" height="10" class="pixel" />
+                )}
+                {elementLabel(e)}
+              </button>
+            ))
+          }
+        </dd>
+      </div>
+
+      <div class="filter-row">
+        <dt>Buscar</dt>
+        <dd class="flex flex-wrap gap-2 items-center">
+          <input
+            id="f-search"
+            type="search"
+            placeholder="Nome ou efeito..."
+            class="bg-deep border border-copper px-3 py-1 text-sm flex-1 min-w-[200px] rounded-sm focus:outline-none focus:border-gold"
+          />
+          <label class="chip cursor-pointer inline-flex items-center gap-1.5">
+            <input type="checkbox" id="f-boss" class="align-middle" />
+            Só de chefe
+          </label>
+        </dd>
+      </div>
+    </dl>
+  </section>
+
+  <div class="flex items-baseline justify-between mb-3 gap-3">
+    <span id="f-count" class="text-xs uppercase tracking-widest text-gold"></span>
+    <select
+      id="f-sort"
+      class="bg-deep border border-copper px-2 py-1 text-xs rounded-sm focus:outline-none focus:border-gold"
+    >
+      <option value="id">Ordem do jogo</option>
+      <option value="atk">Maior ATK</option>
+      <option value="hp">Maior PV</option>
+      <option value="def">Maior DEF</option>
+      <option value="crit">Maior CRIT</option>
+      <option value="parry">Maior BLOQUEIO</option>
+    </select>
+  </div>
+
+  <div id="items-grid" class="grid gap-2.5 grid-cols-[repeat(auto-fill,minmax(215px,1fr))]">
+    {
+      items.map((it) => (
+        <article
+          class="panel p-2.5 flex flex-col"
+          data-name={it.namePt.toLowerCase()}
+          data-effects={it.effectsPt.join(' | ').toLowerCase()}
+          data-slot={it.slot}
+          data-rarity={it.rarity}
+          data-element={it.element}
+          data-boss={it.bossExclusive ? '1' : '0'}
+          data-id={it.id}
+          data-atk={it.stats.atk}
+          data-hp={it.stats.hp}
+          data-def={it.stats.def}
+          data-crit={it.stats.crit}
+          data-parry={it.stats.parry}
+          style={`border-color: color-mix(in srgb, ${rarityColor(it.rarity)} 35%, var(--t-copper))`}
+        >
+          <div class="flex gap-2.5 items-start">
+            <div
+              class="slot w-12 h-12 shrink-0"
+              style={`box-shadow: inset 0 0 0 1px color-mix(in srgb, ${rarityColor(it.rarity)} 50%, transparent)`}
+            >
+              <img
+                src={withBase(`/icons/items/${it.icon}`)}
+                alt=""
+                width="28"
+                height="28"
+                loading="lazy"
+                class="w-[70%] h-[70%] object-contain"
+              />
+            </div>
+            <div class="min-w-0 flex-1">
+              <div
+                class="text-[0.58rem] uppercase tracking-wider flex items-center gap-1.5"
+                style={`color: ${rarityColor(it.rarity)}`}
+              >
+                {rarityLabel(it.rarity)}
+                {it.bossExclusive && <span class="text-mythic">· chefe</span>}
+                <span class="ml-auto text-text-muted normal-case tracking-normal">#{it.id}</span>
+              </div>
+              <h3 class="text-sm leading-tight text-text-main mt-0.5">{it.namePt}</h3>
+              <div class="text-[0.65rem] text-text-muted mt-0.5 flex items-center gap-1">
+                {slotLabel(it.slot)}
+                {it.element !== 'None' && (
+                  <>
+                    <span>·</span>
+                    <img src={elementIcon(it.element)} alt="" width="9" height="9" class="pixel" />
+                    <span style={`color: ${elementColor(it.element)}`}>
+                      {elementLabel(it.element)}
+                    </span>
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <div class="flex flex-wrap gap-x-2 gap-y-0.5 text-[0.7rem] text-text-soft mt-2 pt-2 border-t border-copper/30">
+            {it.stats.hp > 0 && <span>PV {it.stats.hp}</span>}
+            {it.stats.atk > 0 && <span>ATK {it.stats.atk}</span>}
+            {it.stats.def > 0 && <span>DEF {it.stats.def}</span>}
+            {it.stats.crit > 0 && <span>CRIT {it.stats.crit}</span>}
+            {it.stats.parry > 0 && <span>BLOQ {it.stats.parry}</span>}
+          </div>
+
+          {it.effectsPt.length > 0 && (
+            <ul class="mt-1.5 space-y-0.5">
+              {it.effectsPt.map((e) => (
+                <li class="text-[0.68rem] text-amber leading-snug">{e}</li>
+              ))}
+            </ul>
+          )}
+        </article>
+      ))
+    }
+  </div>
+
+  <script>
+    const grid = document.getElementById('items-grid')!;
+    const cards = Array.from(grid.children) as HTMLElement[];
+    const search = document.getElementById('f-search') as HTMLInputElement;
+    const bossOnly = document.getElementById('f-boss') as HTMLInputElement;
+    const sortSel = document.getElementById('f-sort') as HTMLSelectElement;
+    const count = document.getElementById('f-count') as HTMLElement;
+    const active: Record<string, string> = { rarity: '', slot: '', element: '' };
+
+    function apply() {
+      const q = search.value.trim().toLowerCase();
+      let visible = 0;
+      for (const card of cards) {
+        const d = card.dataset;
+        const ok =
+          (!q || d.name!.includes(q) || d.effects!.includes(q)) &&
+          (!active.rarity || d.rarity === active.rarity) &&
+          (!active.slot || d.slot === active.slot) &&
+          (!active.element || d.element === active.element) &&
+          (!bossOnly.checked || d.boss === '1');
+        card.style.display = ok ? '' : 'none';
+        if (ok) visible++;
+      }
+      count.textContent = `${visible} de ${cards.length} itens`;
+    }
+
+    function sortCards() {
+      const key = sortSel.value;
+      const sorted = [...cards].sort((a, b) =>
+        key === 'id'
+          ? Number(a.dataset.id) - Number(b.dataset.id)
+          : Number(b.dataset[key]) - Number(a.dataset[key])
+      );
+      for (const c of sorted) grid.appendChild(c);
+    }
+
+    document.querySelectorAll<HTMLElement>('.chip[data-filter]').forEach((chip) => {
+      chip.addEventListener('click', () => {
+        const group = chip.dataset.filter!;
+        active[group] = chip.dataset.value!;
+        document
+          .querySelectorAll<HTMLElement>(`.chip[data-filter="${group}"]`)
+          .forEach((c) => (c.dataset.active = String(c === chip)));
+        apply();
+      });
+    });
+
+    search.addEventListener('input', apply);
+    bossOnly.addEventListener('change', apply);
+    sortSel.addEventListener('change', () => {
+      sortCards();
+      apply();
+    });
+
+    // Permite chegar da busca global já filtrado: /itens?q=Nome
+    const urlQ = new URLSearchParams(location.search).get('q');
+    if (urlQ) search.value = urlQ;
+    apply();
+  </script>
+</BaseLayout>

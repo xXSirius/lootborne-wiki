@@ -1,0 +1,44 @@
+/* Paleta da wiki.
+   As cores de painel, borda e ouro foram amostradas das proprias texturas de UI
+   do jogo (AB_UI_*.png), entao o site usa a identidade do Lootborne em vez de uma
+   paleta inventada. A origem de cada uma esta anotada ao lado. */
+:root {
+  /* --- Superficies: do AB_UI_LEADERBOARD_PANEL / AB_UI_CHAR_PANEL --- */
+  --t-panel: #3e322a; /* corpo de painel */
+  --t-panel-head: #29201a; /* faixa de titulo do painel */
+  --t-deep: #231c17; /* fundo de slot / area interna */
+  --t-bg: #15100c; /* fundo da pagina (escurecido a partir de --t-deep) */
+
+  /* --- Bordas e ouro: das mesmas texturas --- */
+  --t-copper: #93603d; /* borda padrao dos paineis */
+  --t-copper-light: #bd8f71; /* borda em destaque */
+  --t-tan: #a39671; /* borda dos slots de item */
+  --t-gold: #c5a646; /* filigrana dourada */
+  --t-gold-bright: #ffc000; /* ouro de realce */
+
+  /* --- Texto: #ffcc00 e #ffaa44 sao os tons que o jogo usa em rich text --- */
+  --t-text-main: #efe6d9;
+  --t-text-soft: #c2b3a2;
+  --t-text-muted: #8f8073;
+  --t-amber: #ffaa44; /* usado nos tooltips de limite do jogo */
+  --t-xp: #ffcc00; /* usado no texto de ganho de XP */
+
+  /* --- Elementos: amostrados de AB_UI_GENERIC_ELEMENT_*.png --- */
+  --e-flame: #ff640f;
+  --e-frost: #28c7cd;
+  --e-holy: #f5f2e8; /* o icone e' branco; clareado pra ler sobre o marrom */
+  --e-shadow: #9a9a9a; /* o icone e' cinza escuro; idem */
+  --e-arcane: #c787e5;
+  --e-none: #8f8073;
+
+  /* --- Raridade ---
+     Nao ha fonte de cor de raridade nos arquivos do jogo: nem sprite, nem
+     constante, nem tag de cor na localizacao. Esta escala e' convencao da wiki,
+     so' pra leitura rapida — nao e' dado extraido. */
+  --r-common: #9a9a9a;
+  --r-rare: #4f8ef0;
+  --r-epic: #b356e8;
+  --r-legendary: #e8912f;
+  --r-mythic: #e0432f;
+  --r-ascended: #4fe0d0;
+}

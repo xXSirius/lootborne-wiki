@@ -1,0 +1,390 @@
+@import 'tailwindcss';
+@import './tokens.css';
+
+/* Fonte de titulo do proprio jogo (Assets/Font/celtic-bit.ttf).
+   Celtic-Bit, de Mirz123 — livre pra uso pessoal e comercial num projeto. */
+@font-face {
+  font-family: 'Celtic Bit';
+  src: url('/fonts/celtic-bit.ttf') format('truetype');
+  font-display: swap;
+}
+
+@theme {
+  --color-bg: var(--t-bg);
+  --color-panel: var(--t-panel);
+  --color-panel-head: var(--t-panel-head);
+  --color-deep: var(--t-deep);
+  --color-copper: var(--t-copper);
+  --color-copper-light: var(--t-copper-light);
+  --color-tan: var(--t-tan);
+  --color-gold: var(--t-gold);
+  --color-gold-bright: var(--t-gold-bright);
+  --color-amber: var(--t-amber);
+  --color-xp: var(--t-xp);
+  --color-text-main: var(--t-text-main);
+  --color-text-soft: var(--t-text-soft);
+  --color-text-muted: var(--t-text-muted);
+
+  --color-common: var(--r-common);
+  --color-rare: var(--r-rare);
+  --color-epic: var(--r-epic);
+  --color-legendary: var(--r-legendary);
+  --color-mythic: var(--r-mythic);
+  --color-ascended: var(--r-ascended);
+
+  --color-flame: var(--e-flame);
+  --color-frost: var(--e-frost);
+  --color-holy: var(--e-holy);
+  --color-shadow: var(--e-shadow);
+  --color-arcane: var(--e-arcane);
+  --color-element-none: var(--e-none);
+
+  --font-display: 'Celtic Bit', 'Spectral', Georgia, serif;
+  --font-sans: 'Inter', system-ui, sans-serif;
+}
+
+body {
+  background: var(--t-bg);
+  color: var(--t-text-main);
+}
+
+/* --- Fundo: arte de cenario do jogo, como pano de fundo da pagina ---------- */
+/* O backdrop e' 180x120; ampliado em tela cheia ele fica bem chunky, que e'
+   justamente a cara do jogo. Fica atras de tudo e bem apagado. */
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  background-image: url('/ui/backdrop.png');
+  background-size: cover;
+  background-position: center 30%;
+  image-rendering: pixelated;
+  opacity: 0.55;
+}
+.backdrop::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  /* Escurece o topo e a base pra nao competir com a barra e o rodape; o miolo
+     fica visivel porque o conteudo sempre vive dentro de paineis opacos. */
+  background: linear-gradient(
+    180deg,
+    var(--t-bg) 0%,
+    color-mix(in srgb, var(--t-bg) 35%, transparent) 22%,
+    color-mix(in srgb, var(--t-bg) 35%, transparent) 65%,
+    var(--t-bg) 100%
+  );
+}
+
+/* --- Paineis: faixa de titulo escura + corpo marrom + fio de cobre -------- */
+.panel {
+  background: var(--t-panel);
+  border: 1px solid var(--t-copper);
+  position: relative;
+}
+.panel-head {
+  background: var(--t-panel-head);
+  border-bottom: 1px solid var(--t-copper);
+  padding: 0.4rem 0.75rem;
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--t-gold);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.panel-deep {
+  background: var(--t-deep);
+  border: 1px solid var(--t-copper);
+}
+
+/* Filigrana dourada nos cantos — recortada do AB_UI_CHAR_PANEL do jogo. */
+.filigree::before,
+.filigree::after {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  background: url('/ui/corner.png') no-repeat center / contain;
+  image-rendering: pixelated;
+  pointer-events: none;
+  opacity: 0.9;
+}
+.filigree::before {
+  top: 2px;
+  left: 2px;
+}
+.filigree::after {
+  top: 2px;
+  right: 2px;
+  transform: scaleX(-1);
+}
+
+/* --- Faixa de titulo de pagina ------------------------------------------- */
+/* Equivalente ao banner ornamentado da referencia, montado com o ornamento
+   dourado do jogo (AB_UI_LEADERBOARD_ORNAMENT) no centro. */
+.banner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 2.75rem;
+  background:
+    linear-gradient(
+      90deg,
+      transparent 0%,
+      color-mix(in srgb, var(--t-copper) 55%, transparent) 18%,
+      color-mix(in srgb, var(--t-copper) 80%, transparent) 50%,
+      color-mix(in srgb, var(--t-copper) 55%, transparent) 82%,
+      transparent 100%
+    ),
+    var(--t-panel-head);
+  border-top: 1px solid var(--t-gold);
+  border-bottom: 1px solid var(--t-gold);
+}
+.banner > span {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-size: 1.05rem;
+  color: var(--t-gold-bright);
+  text-shadow: 0 1px 0 #000;
+}
+.banner::before,
+.banner::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 106px;
+  height: 22px;
+  background: url('/ui/ornament.png') no-repeat center / contain;
+  image-rendering: pixelated;
+  transform: translateY(-50%);
+  opacity: 0.85;
+}
+.banner::before {
+  left: 0.75rem;
+}
+.banner::after {
+  right: 0.75rem;
+  transform: translateY(-50%) scaleX(-1);
+}
+@media (max-width: 640px) {
+  .banner::before,
+  .banner::after {
+    display: none;
+  }
+}
+
+/* --- Slot de item: o frame 28x28 do jogo como moldura do icone ----------- */
+.slot {
+  background: url('/ui/slot.png') no-repeat center / 100% 100%;
+  image-rendering: pixelated;
+  display: grid;
+  place-items: center;
+}
+.slot img {
+  image-rendering: pixelated;
+}
+
+/* --- Chips de filtro, no formato da referencia --------------------------- */
+.chip {
+  font-size: 0.75rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 0.2rem;
+  border: 1px solid color-mix(in srgb, var(--t-copper) 70%, transparent);
+  background: var(--t-deep);
+  color: var(--t-text-soft);
+  cursor: pointer;
+  transition: all 0.12s ease;
+  user-select: none;
+  line-height: 1.5;
+}
+.chip:hover {
+  color: var(--t-text-main);
+  border-color: var(--t-copper-light);
+}
+.chip[data-active='true'] {
+  background: color-mix(in srgb, var(--chip-color, var(--t-amber)) 22%, var(--t-deep));
+  border-color: var(--chip-color, var(--t-amber));
+  color: var(--chip-color, var(--t-amber));
+  font-weight: 600;
+}
+
+/* Linha de filtro: rotulo na calha da esquerda + chips a direita. */
+.filter-row {
+  display: grid;
+  grid-template-columns: 7.5rem 1fr;
+  gap: 0.75rem;
+  padding: 0.6rem 0;
+  border-top: 1px solid color-mix(in srgb, var(--t-copper) 35%, transparent);
+  align-items: start;
+}
+.filter-row:first-child {
+  border-top: 0;
+}
+.filter-row > dt {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--t-gold);
+  padding-top: 0.2rem;
+}
+.filter-row > dt::before {
+  content: '';
+  width: 0.4rem;
+  height: 0.4rem;
+  background: var(--t-gold);
+  transform: rotate(45deg);
+  flex-shrink: 0;
+}
+@media (max-width: 640px) {
+  .filter-row {
+    grid-template-columns: 1fr;
+    gap: 0.35rem;
+  }
+}
+
+/* --- Navegacao lateral --------------------------------------------------- */
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.3rem 0.5rem;
+  font-size: 0.85rem;
+  color: var(--t-text-soft);
+  border-left: 2px solid transparent;
+  transition: all 0.1s ease;
+}
+.nav-link:hover {
+  color: var(--t-text-main);
+  background: color-mix(in srgb, var(--t-copper) 18%, transparent);
+}
+.nav-link[aria-current='page'] {
+  color: var(--t-gold-bright);
+  background: color-mix(in srgb, var(--t-copper) 28%, transparent);
+  border-left-color: var(--t-gold);
+}
+.nav-link img {
+  width: 14px;
+  height: 14px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  flex-shrink: 0;
+}
+.nav-group {
+  font-size: 0.65rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--t-gold);
+  padding: 0 0.5rem;
+  margin-bottom: 0.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.nav-group::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: color-mix(in srgb, var(--t-copper) 55%, transparent);
+}
+
+/* --- Botoes -------------------------------------------------------------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.9rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border: 1px solid var(--t-gold);
+  background: linear-gradient(180deg, var(--t-gold) 0%, #a07a22 100%);
+  color: #1a1206;
+  border-radius: 0.15rem;
+  transition: filter 0.12s ease;
+}
+.btn:hover {
+  filter: brightness(1.12);
+}
+.btn-ghost {
+  background: var(--t-deep);
+  border-color: var(--t-copper);
+  color: var(--t-text-soft);
+}
+.btn-ghost:hover {
+  color: var(--t-gold-bright);
+  border-color: var(--t-gold);
+  filter: none;
+}
+
+/* --- Caixa de numero (as "stat boxes" da referencia) --------------------- */
+.stat-box {
+  background: var(--t-deep);
+  border: 1px solid color-mix(in srgb, var(--t-copper) 70%, transparent);
+  padding: 0.5rem 0.75rem;
+}
+.stat-box dt {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  color: var(--t-gold-bright);
+  line-height: 1.1;
+}
+.stat-box dd {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--t-text-muted);
+  margin: 0;
+}
+
+.rarity-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+  font-weight: 600;
+  font-size: 0.8rem;
+}
+.rarity-badge::before {
+  content: '';
+  width: 0.55em;
+  height: 0.55em;
+  border-radius: 999px;
+  background: currentColor;
+  display: inline-block;
+}
+
+.pixel {
+  image-rendering: pixelated;
+}
+
+table.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+table.data-table th {
+  text-align: left;
+  color: var(--t-gold);
+  font-weight: 600;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--t-copper);
+  position: sticky;
+  top: 0;
+  background: var(--t-panel-head);
+}
+table.data-table td {
+  padding: 0.45rem 0.75rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--t-copper) 32%, transparent);
+}
+table.data-table tbody tr:hover {
+  background: color-mix(in srgb, var(--t-copper) 15%, transparent);
+}

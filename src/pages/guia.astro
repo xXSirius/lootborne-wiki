@@ -1,0 +1,324 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import constants from '../data/constants.json';
+import sectors from '../data/sectors.json';
+import enemies from '../data/enemies.json';
+import items from '../data/items.json';
+import {
+  elementLabel,
+  elementColor,
+  elementIcon,
+  rarityLabel,
+  rarityColor,
+  ORDEM_RARIDADE,
+} from '../lib/labels';
+import { withBase } from '../lib/base';
+
+const bossItems = items.filter((i) => i.bossExclusive);
+
+const c = constants as unknown as Record<string, number>;
+const ELEMENTS = ['Arcane', 'Flame', 'Frost', 'Holy', 'Shadow'];
+const enemyByName = new Map(enemies.map((e) => [e.name, e]));
+
+// Para cada setor, conta quantos inimigos sao fracos / resistentes a cada elemento.
+const sectorElements = sectors.map((s) => {
+  const list = s.enemies.map((n) => enemyByName.get(n)).filter(Boolean);
+  const scores = ELEMENTS.map((el) => {
+    const weak = list.filter((e) => e!.weakElement === el).length;
+    const resist = list.filter(
+      (e) => e!.resistElement === el || e!.resistElement2 === el
+    ).length;
+    return { el, weak, resist, score: weak - resist };
+  });
+  const best = [...scores].sort((a, b) => b.score - a.score)[0];
+  const worst = [...scores].sort((a, b) => a.score - b.score)[0];
+  return { sector: s, scores, best, worst, total: list.length };
+});
+
+// Quanto cada raridade rende ao desmontar (constantes DISMANTLE_BM_*).
+const desmontePorRaridade = ORDEM_RARIDADE.map(
+  (raridade) => [raridade, c[`DISMANTLE_BM_${raridade.toUpperCase()}`]] as const
+).filter(([, valor]) => valor !== undefined);
+
+const staminaBurst = Math.floor(c.STAMINA_MAX / c.STAMINA_COST_PER_BATTLE);
+const secondsPerBattle = c.STAMINA_COST_PER_BATTLE / c.STAMINA_REGEN_PER_SEC;
+---
+
+<BaseLayout
+  title="Guia do jogador"
+  banner="Guia"
+  description="O que fazer em Lootborne pra evoluir rápido: rotina de farm, escolha de elemento por setor, erros que custam progresso."
+>
+  <header class="mb-10 max-w-3xl">
+    <h1 class="font-display text-3xl md:text-4xl font-semibold mb-3">Guia do jogador</h1>
+    <p class="text-text-soft">
+      A parte prática: o que fazer, em que ordem, e onde o jogo silenciosamente te pune. Tudo aqui sai
+      dos números reais — as páginas de{' '}
+      <a href={withBase('/mecanicas')} class="text-gold hover:underline">Mecânicas</a> e{' '}
+      <a href={withBase('/atributos')} class="text-gold hover:underline">Atributos</a> têm a fundamentação.
+    </p>
+  </header>
+
+  <section class="mb-12">
+    <h2 class="font-display text-2xl font-semibold mb-4">Os 4 erros que mais custam progresso</h2>
+    <div class="grid md:grid-cols-2 gap-4">
+      <div class="panel p-5 border-mythic/30">
+        <h3 class="font-semibold mb-1.5">1. Deixar o inventário lotar</h3>
+        <p class="text-text-soft text-sm">
+          Com o inventário no teto, <strong class="text-text-main">os drops novos são descartados</strong> —
+          não ficam esperando, somem. E a tela nem sempre avisa. Capacidade: {c.INVENTORY_CAP_T1} no
+          começo, {c.INVENTORY_CAP_T2} no nível {c.INVENTORY_CAP_T2_LEVEL}, {c.INVENTORY_CAP_T3} no{' '}
+          {c.INVENTORY_CAP_T3_LEVEL}. Desmonte sobra com frequência.
+        </p>
+      </div>
+      <div class="panel p-5 border-mythic/30">
+        <h3 class="font-semibold mb-1.5">2. Farmar setor muito abaixo do seu nível</h3>
+        <p class="text-text-soft text-sm">
+          Existe punição dupla: o XP cai {(c.XP_SCALING_PENALTY * 100).toFixed(0)}% por nível de
+          diferença, e a raridade do drop é rebaixada em até{' '}
+          {(c.OVERLEVEL_DROP_DEMOTE_CAP * 100).toFixed(0)}% (
+          {(c.OVERLEVEL_DROP_DEMOTE_PER_LEVEL * 100).toFixed(0)}% por nível). Há uma folga de{' '}
+          {c.OVERLEVEL_DROP_FREE_BAND} níveis antes de começar — depois disso, você está farmando de graça.
+        </p>
+      </div>
+      <div class="panel p-5 border-mythic/30">
+        <h3 class="font-semibold mb-1.5">3. Passar do teto de CRIT ou PARRY</h3>
+        <p class="text-text-soft text-sm">
+          CRIT para de valer em {c.CRIT_CAP}% e PARRY em {c.PARRY_CAP}%. Como itens também dão esses
+          atributos, dá pra ultrapassar sem perceber e perder pontos. Confira o total sempre que trocar
+          equipamento.
+        </p>
+      </div>
+      <div class="panel p-5 border-mythic/30">
+        <h3 class="font-semibold mb-1.5">4. Deixar o jogo aberto 24h</h3>
+        <p class="text-text-soft text-sm">
+          O Second Wind acumula <strong class="text-text-main">enquanto você está fora</strong> —{' '}
+          {c.SECOND_WIND_ACCRUAL_PER_OFFLINE_HOUR} por hora offline, até {c.SECOND_WIND_MAX_HOURS}h. Ele
+          vale {c.SECOND_WIND_XP_MULTIPLIER}× XP, moeda e chance de drop. Fechar o jogo por um período e
+          voltar rende mais que deixar rodando direto.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="mb-12">
+    <h2 class="font-display text-2xl font-semibold mb-2">Qual elemento levar em cada setor</h2>
+    <p class="text-text-soft max-w-3xl mb-3">
+      Cada inimigo tem resistência e fraqueza elemental próprias (<code class="text-amber"
+        >{(c.ENEMY_RESIST_PCT * 100).toFixed(0)}%</code
+      >{' '}
+      de diferença no dano, segundo a constante <code class="text-amber">ENEMY_RESIST_PCT</code>).
+      Cruzando a lista de inimigos de cada setor com essas resistências, dá pra saber qual elemento
+      rende mais e qual evitar:
+    </p>
+    <div class="panel p-3 mb-4 max-w-3xl border-gold">
+      <p class="text-sm text-text-soft leading-relaxed">
+        <strong class="text-gold">Antes de montar o build:</strong> 
+        <strong class="text-text-main">só a arma equipada</strong> conta para resistência e fraqueza —
+        "os outros slots de equipamento não contam". Ou seja, encher elmo, corpo, cinto, anel e
+        amuleto de Gelo não aumenta seu dano de Gelo contra quem é fraco a Gelo. O elemento dos
+        outros slots só serve para as sinergias de item (aquelas do tipo "para cada outro item de
+        Chama"), que são outra coisa.
+      </p>
+    </div>
+    <div class="panel overflow-x-auto">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Setor</th>
+            <th>Melhor elemento</th>
+            <th>Evitar</th>
+            <th>Detalhe (fracos / resistentes)</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            sectorElements.map((se) => (
+              <tr>
+                <td class="font-medium">
+                  {se.sector.id} — {se.sector.namePt}
+                </td>
+                <td>
+                  {se.best.score > 0 ? (
+                    <span
+                      class="inline-flex items-center gap-1 font-semibold"
+                      style={{ color: elementColor(se.best.el) }}
+                    >
+                      <img src={elementIcon(se.best.el)} alt="" width="10" height="10" class="pixel" />
+                      {elementLabel(se.best.el)}
+                    </span>
+                  ) : (
+                    <span class="text-text-muted">indiferente</span>
+                  )}
+                </td>
+                <td>
+                  {se.worst.score < 0 ? (
+                    <span
+                      class="inline-flex items-center gap-1"
+                      style={{ color: elementColor(se.worst.el) }}
+                    >
+                      <img src={elementIcon(se.worst.el)} alt="" width="10" height="10" class="pixel" />
+                      {elementLabel(se.worst.el)}
+                    </span>
+                  ) : (
+                    <span class="text-text-muted">—</span>
+                  )}
+                </td>
+                <td class="text-xs text-text-soft">
+                  {se.scores
+                    .filter((s) => s.weak > 0 || s.resist > 0)
+                    .map((s) => `${elementLabel(s.el)}: ${s.weak}f/${s.resist}r`)
+                    .join(' · ') || 'nenhuma resistência neste setor'}
+                </td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+    <p class="text-text-soft text-sm mt-3 max-w-3xl">
+      Some a isso a sinergia mono-elemento (<code>{c.MONO_SYNERGY_MULTIPLIER}×</code> com o set todo do
+      mesmo elemento) e a conta fica clara: vale manter <strong class="text-text-main">dois sets
+      mono-elemento</strong> e alternar conforme o setor, em vez de um set misto permanente.
+    </p>
+  </section>
+
+  <section class="mb-12">
+    <h2 class="font-display text-2xl font-semibold mb-2">A rotina que rende mais</h2>
+    <div class="grid md:grid-cols-3 gap-4 mb-4">
+      <div class="panel p-5">
+        <div class="text-2xl font-display text-gold-bright mb-1">{staminaBurst}</div>
+        <div class="text-sm text-text-soft">
+          batalhas seguidas com stamina cheia ({c.STAMINA_MAX} ÷ {c.STAMINA_COST_PER_BATTLE} por batalha)
+        </div>
+      </div>
+      <div class="panel p-5">
+        <div class="text-2xl font-display text-gold-bright mb-1">{secondsPerBattle.toFixed(1)}s</div>
+        <div class="text-sm text-text-soft">
+          por batalha no ritmo sustentado (só a regeneração de stamina)
+        </div>
+      </div>
+      <div class="panel p-5">
+        <div class="text-2xl font-display text-gold-bright mb-1">{c.PITY_DROP_THRESHOLD}</div>
+        <div class="text-sm text-text-soft">
+          batalhas sem drop até o sistema de pity aumentar sua chance
+        </div>
+      </div>
+    </div>
+    <ol class="text-text-soft space-y-2 max-w-3xl list-decimal list-inside text-sm">
+      <li>
+        <strong class="text-text-main">Entre com o Second Wind ativo.</strong> Se você ficou offline
+        algumas horas, é nesse período que o XP e os drops valem {c.SECOND_WIND_XP_MULTIPLIER}×. Gaste
+        a janela no setor mais alto que você aguenta.
+      </li>
+      <li>
+        <strong class="text-text-main">Queime a stamina cheia no setor mais difícil possível.</strong>{' '}
+        Setor mais alto = tabela de drop melhor (veja <a href={withBase('/setores')} class="text-gold-bright hover:underline">Setores</a>).
+      </li>
+      <li>
+        <strong class="text-text-main">Limpe o chefe do setor assim que liberar.</strong> A primeira
+        limpeza dá raridade garantida — é drop certo, não sorteio.
+      </li>
+      <li>
+        <strong class="text-text-main">Desmonte antes de sair.</strong> Inventário cheio = drop
+        perdido, e Bloodmark é o que move a forja.
+      </li>
+      <li>
+        <strong class="text-text-main">Deixe o PvP rolando.</strong> É assíncrono: rende{' '}
+        {c.PVP_CURRENCY_WIN} de moeda na vitória e {c.PVP_CURRENCY_LOSE} na derrota, com{' '}
+        {(c.PVP_WIN_DROP_CHANCE * 100).toFixed(0)}% / {(c.PVP_LOSS_DROP_CHANCE * 100).toFixed(0)}% de
+        chance de drop. Perder também paga.
+      </li>
+    </ol>
+  </section>
+
+  <section class="mb-12">
+    <h2 class="font-display text-2xl font-semibold mb-3">Marcos de progressão</h2>
+    <div class="panel overflow-x-auto">
+      <table class="data-table">
+        <thead>
+          <tr><th>Quando</th><th>O que desbloqueia</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Limpar setor {c.AUTOFIGHT_UNLOCK_SECTOR_CLEAR}</td><td>Auto-fight</td></tr>
+          <tr><td>Limpar setor {c.SHOP_CONSUMABLES_AFTER_SECTOR_CLEARED}</td><td>Loja de poções</td></tr>
+          <tr><td>Limpar setor {c.CONSUMABLE_SECOND_SLOT_AFTER_SECTOR_CLEARED}</td><td>2º slot de poção</td></tr>
+          <tr><td>Nível {c.RARITY_UNLOCK_RARE}</td><td>Itens <span style="color:var(--r-rare)">Rare</span></td></tr>
+          <tr><td>Nível {c.RARITY_UNLOCK_EPIC}</td><td>Itens <span style="color:var(--r-epic)">Epic</span></td></tr>
+          <tr><td>Nível {c.INVENTORY_CAP_T2_LEVEL}</td><td>Inventário {c.INVENTORY_CAP_T2}</td></tr>
+          <tr><td>Nível {c.RARITY_UNLOCK_LEGENDARY}</td><td>Itens <span style="color:var(--r-legendary)">Legendary</span></td></tr>
+          <tr><td>Nível {c.RARITY_UNLOCK_MYTHIC}</td><td>Itens <span style="color:var(--r-mythic)">Mythic</span> e <span style="color:var(--r-ascended)">Ascended</span>, inventário {c.INVENTORY_CAP_T3}</td></tr>
+          <tr><td>Onda {c.FORGE_MYTHIC_MIN_WAVE_RECORD} na Arena</td><td>Forjar rumo a Mythic</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="mb-12">
+    <h2 class="font-display text-2xl font-semibold mb-2">Os 4 chefes de PvP</h2>
+    <p class="text-text-soft max-w-3xl mb-4">
+      Existem exatamente <strong class="text-text-main">4 itens no jogo marcados como exclusivos de
+      chefe</strong> — e batem com os 4 conjuntos de sprite de chefe encontrados nos arquivos
+      (Flame, Frost, Holy, Shadow). Ou seja: um chefe por elemento, cada um guardando uma peça que
+      não cai de nenhuma outra forma.
+    </p>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+      {
+        bossItems.map((it) => (
+          <div
+            class="panel p-3"
+            style={`border-color: color-mix(in srgb, var(--e-${it.element.toLowerCase()}) 35%, var(--t-border))`}
+          >
+            <div class="flex items-center gap-2 mb-1.5">
+              <img
+                src={withBase(`/icons/items/${it.icon}`)}
+                alt=""
+                width="32"
+                height="32"
+                class="pixel w-8 h-8 rounded bg-deep"
+              />
+              <span style={`color: var(--e-${it.element.toLowerCase()})`} class="text-xs font-semibold">
+                {it.element}
+              </span>
+            </div>
+            <div class="text-sm font-medium leading-tight">{it.namePt}</div>
+            <div class="text-[0.65rem] mt-0.5" style={`color: var(--r-${it.rarity.toLowerCase()})`}>
+              {it.rarity}
+            </div>
+            <ul class="mt-1.5 space-y-0.5">
+              {it.effects.map((e) => (
+                <li class="text-[0.68rem] text-gold leading-snug">{e}</li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <section>
+    <h2 class="font-display text-2xl font-semibold mb-3">Economia: o que fazer com item repetido</h2>
+    <div class="grid md:grid-cols-2 gap-4 max-w-4xl">
+      <div class="panel p-5">
+        <h3 class="font-semibold mb-1.5">Desmontar</h3>
+        <p class="text-text-soft text-sm">
+          Vira Bloodmark na hora:{' '}
+          {desmontePorRaridade.map(([raridade, valor], i) => (
+            <>
+              {i > 0 && ', '}
+              {valor} (<span style={{ color: rarityColor(raridade) }}>{rarityLabel(raridade)}</span>)
+            </>
+          ))}. É o caminho padrão pra lixo de inventário.
+        </p>
+      </div>
+      <div class="panel p-5">
+        <h3 class="font-semibold mb-1.5">Forjar</h3>
+        <p class="text-text-soft text-sm">
+          Duplicado pode ser apostado pra subir de raridade. O gate de Mythic é ter recorde de onda{' '}
+          {c.FORGE_MYTHIC_MIN_WAVE_RECORD}+ na Arena — ou seja, a Arena não é conteúdo opcional, ela
+          destrava economia.
+        </p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

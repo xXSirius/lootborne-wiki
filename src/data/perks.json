@@ -1,0 +1,228 @@
+{
+  "_nota": "Nome e efeito vem de Resources/localization/pt-BR.json (perk.N.name / perk.N.effect) — e o texto que o proprio jogo mostra, nao inferencia. O numero N casa com o prefixo do arquivo de icone em Resources/perkicons.",
+  "custoPorTier": {
+    "T1": 100,
+    "T2": 350,
+    "T3": 700
+  },
+  "custoNota": "Constantes V2_COST_T1/T2/T3 de PerkEconomy (fato). Na economia V2 o requisito de nível é 1 para todos os tiers — o gate é limpar setor, não subir de nível.",
+  "perks": [
+    {
+      "id": 1,
+      "name": "Ira Reprimida",
+      "icon": "01_Pent_Up_Wrath.png",
+      "effect": "Cada golpe sem crítico acumula +10% de chance de CRIT (máx. +50%). Reinicia quando você acerta um crítico",
+      "nameEn": "Pent-Up Wrath"
+    },
+    {
+      "id": 2,
+      "name": "Guarda Inata",
+      "icon": "02_Innate_Guard.png",
+      "effect": "Se seu BLOQUEIO estiver abaixo de 15%, ele é elevado a 15%",
+      "nameEn": "Innate Guard"
+    },
+    {
+      "id": 3,
+      "name": "Primeiro Sangue",
+      "icon": "03_First_Blood.png",
+      "effect": "O primeiro ataque de cada combate é um crítico garantido",
+      "nameEn": "First Blood"
+    },
+    {
+      "id": 4,
+      "name": "Fúria Bruta",
+      "icon": "04_Brute_s_Temper.png",
+      "effect": "Converte 20% da DEF em ATK",
+      "nameEn": "Brute's Temper"
+    },
+    {
+      "id": 5,
+      "name": "Ímpeto Crescente",
+      "icon": "05_Rising_Momentum.png",
+      "effect": "Cada ataque acertado: +5% de dano, até +50% (reinicia a cada combate)",
+      "nameEn": "Rising Momentum"
+    },
+    {
+      "id": 6,
+      "name": "Investida Pesada",
+      "icon": "06_Heavy_Lunge.png",
+      "effect": "A cada 3 ataques: causa +100% de dano",
+      "nameEn": "Heavy Lunge"
+    },
+    {
+      "id": 7,
+      "name": "Veneno Persistente",
+      "icon": "07_Lingering_Venom.png",
+      "effect": "Seus críticos envenenam o inimigo, causando 24 de dano em 4 s",
+      "nameEn": "Lingering Venom"
+    },
+    {
+      "id": 8,
+      "name": "Réplica Agressiva",
+      "icon": "08_Aggressive_Riposte.png",
+      "effect": "Ao bloquear, seus próximos 2 ataques causam +40% de dano",
+      "nameEn": "Aggressive Riposte"
+    },
+    {
+      "id": 9,
+      "name": "Relâmpago Engarrafado",
+      "icon": "09_Glass_and_Lightning.png",
+      "effect": "+40% de ATK, -25% de PV máximo",
+      "nameEn": "Glass and Lightning"
+    },
+    {
+      "id": 10,
+      "name": "Pele de Dragão",
+      "icon": "10_Dragonhide.png",
+      "effect": "+35% de DEF e +15% de PV máximo, -25% de ATK",
+      "nameEn": "Dragonhide"
+    },
+    {
+      "id": 11,
+      "name": "Fúria Agonizante",
+      "icon": "11_Dying_Fury.png",
+      "effect": "Abaixo de 15% de PV: +50% de CRIT",
+      "nameEn": "Dying Fury"
+    },
+    {
+      "id": 12,
+      "name": "Voto Carmesim",
+      "icon": "12_Crimson_Vow.png",
+      "effect": "Cura 3 PV a cada ataque que acerta",
+      "nameEn": "Crimson Vow"
+    },
+    {
+      "id": 13,
+      "name": "Temeridade Total",
+      "icon": "13_Reckless_Abandon.png",
+      "effect": "+20% de dano causado, mas você sofre 10% mais dano",
+      "nameEn": "Reckless Abandon"
+    },
+    {
+      "id": 14,
+      "name": "Chamado do Rival",
+      "icon": "14_Arena_Calling.png",
+      "effect": "+30% de dano no PvP, -5% de dano no PvE",
+      "nameEn": "Arena Calling"
+    },
+    {
+      "id": 15,
+      "name": "Agressão",
+      "icon": "15_Aggression.png",
+      "effect": "Ganhe +6 de ATK",
+      "nameEn": "Aggression"
+    },
+    {
+      "id": 16,
+      "name": "Anjo da Guarda",
+      "icon": "16_Guardian_Angel.png",
+      "effect": "Se você entrar em combate abaixo de 50% de PV: ganhe um escudo igual a 20% do seu PV máximo",
+      "nameEn": "Guardian Angel"
+    },
+    {
+      "id": 17,
+      "name": "Caçador de Colossos",
+      "icon": "17_Colossus_Hunter.png",
+      "effect": "Somente PvE: cada golpe causa +~2% do PV máximo do inimigo",
+      "nameEn": "Colossus Hunter"
+    },
+    {
+      "id": 18,
+      "name": "Tenacidade",
+      "icon": "18_Tenacity.png",
+      "effect": "Cura 3% do dano que você causa",
+      "nameEn": "Tenacity"
+    },
+    {
+      "id": 19,
+      "name": "Espinhos",
+      "icon": "19_Spiked_Retribution.png",
+      "effect": "Reflete 15% do dano sofrido de volta ao inimigo",
+      "nameEn": "Spiked Retribution"
+    },
+    {
+      "id": 20,
+      "name": "Precisão Absoluta",
+      "icon": "20_Absolute_Precision.png",
+      "effect": "Seus ataques não podem causar crítico; em vez disso, sempre causam +60% de dano",
+      "nameEn": "Absolute Precision"
+    },
+    {
+      "id": 21,
+      "name": "Coração Ardente",
+      "icon": "21_Burning_Heart.png",
+      "effect": "Toda cura é desativada, mas você ganha +35% de dano",
+      "nameEn": "Burning Heart"
+    },
+    {
+      "id": 22,
+      "name": "Aposta do Duelista",
+      "icon": "22_Duelist_s_Gamble.png",
+      "effect": "Você causa +100% de dano, mas também sofre +50% de dano",
+      "nameEn": "Duelist's Gamble"
+    },
+    {
+      "id": 23,
+      "name": "Maldição de Sangue",
+      "icon": "23_Blood_Curse.png",
+      "effect": "-2% do PV máximo/s, mas você rouba 15% de vida e a cura excedente vira um escudo",
+      "nameEn": "Blood Curse"
+    },
+    {
+      "id": 24,
+      "name": "Golpe de Misericórdia",
+      "icon": "24_Coup_de_Grace.png",
+      "effect": "Somente PvE: executa instantaneamente inimigos abaixo de 15% de PV",
+      "nameEn": "Coup de Grâce"
+    },
+    {
+      "id": 25,
+      "name": "Eco Voraz",
+      "icon": "25_Voracious_Echo.png",
+      "effect": "A cada 5 ataques: um golpe extra de dano total que ignora o BLOQUEIO",
+      "nameEn": "Voracious Echo"
+    },
+    {
+      "id": 26,
+      "name": "Eco Espelhado",
+      "icon": "26_Mirror_Echo.png",
+      "effect": "Copia a mecânica do Perk no slot à sua ESQUERDA (só podem ser copiados os Perks com uma mecânica de gatilho)",
+      "nameEn": "Mirror Echo"
+    },
+    {
+      "id": 27,
+      "name": "Ápice Crítico",
+      "icon": "27_Critical_Apex.png",
+      "effect": "Eleva o limite de CRIT de 60% para 65%",
+      "nameEn": "Critical Apex"
+    },
+    {
+      "id": 28,
+      "name": "Baluarte",
+      "icon": "28_Bulwark.png",
+      "effect": "Abaixo de 25% de PV: absorve 50% do dano e cura 10 PV por ataque",
+      "nameEn": "Bulwark"
+    },
+    {
+      "id": 29,
+      "name": "Último Suspiro",
+      "icon": "29_Last_Breath.png",
+      "effect": "Uma vez por combate: em vez de morrer, você fica com 25% de PV",
+      "nameEn": "Last Breath"
+    },
+    {
+      "id": 30,
+      "name": "Guarda Instintiva",
+      "icon": "30_Instinctive_Guard.png",
+      "effect": "+0,5% de DEF para cada ponto de BLOQUEIO, até +27,5%",
+      "nameEn": "Instinctive Guard"
+    },
+    {
+      "id": 31,
+      "name": "Perfura-Armadura",
+      "icon": "31_Armor_Piercer.png",
+      "effect": "Seus ataques ignoram 35% do BLOQUEIO inimigo e 35% da DEF inimiga",
+      "nameEn": "Armor Piercer"
+    }
+  ]
+}

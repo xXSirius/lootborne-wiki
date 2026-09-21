@@ -1,0 +1,98 @@
+{
+  "_nota": "Rotulos e manual copiados de Resources/localization/pt-BR.json — texto oficial do jogo, sem traducao minha.",
+  "raridade": {
+    "all": "Raridades (todas)",
+    "common": "Comum",
+    "rare": "Raro",
+    "epic": "Épico",
+    "legendary": "Lendário",
+    "mythic": "Mítico",
+    "ascended": "Ascendente"
+  },
+  "elemento": {
+    "all": "Elementos (todos)",
+    "arcane": "Arcano",
+    "flame": "Chama",
+    "frost": "Gelo",
+    "holy": "Sagrado",
+    "shadow": "Sombra",
+    "none": "Sem elemento"
+  },
+  "atributo": {
+    "hp": "PV",
+    "atk": "ATK",
+    "def": "DEF",
+    "crit": "CRIT",
+    "parry": "BLOQUEIO",
+    "power": "PODER",
+    "shield": "ESCUDO"
+  },
+  "slot": {
+    "all": "Slots (todos)",
+    "head": "Cabeça",
+    "body": "Corpo",
+    "belt": "Cinto",
+    "weapon": "Arma",
+    "weapon_1": "Arma 1",
+    "weapon_2": "Arma 2",
+    "ring": "Anel",
+    "trinket": "Amuleto"
+  },
+  "manual": [
+    {
+      "id": "combat",
+      "titulo": "Combate",
+      "corpo": "As batalhas acontecem automaticamente: você e o inimigo trocam golpes até que um dos dois caia. Seu PV não se recupera totalmente entre os combates; ele regenera apenas um pouco após cada vitória. Se você morrer, reinicia a zona atual desde o começo, então mantenha equipamento e atributos à frente da curva."
+    },
+    {
+      "id": "stats",
+      "titulo": "Atributos",
+      "corpo": "Cada acerto é resolvido sempre na mesma ordem:\n\nBLOQUEIO: a chance do defensor de anular completamente o golpe (nenhum dano).\nATK: o dano do atacante, sorteado aleatoriamente entre 80% e 120%.\nCRIT: a chance do atacante de dobrar esse valor.\nDEF: divide o que sobrar (30 de DEF reduz o dano em um terço, 60 pela metade, 120 em dois terços). DEF sempre reduz, nunca anula, e cada ponto extra vale um pouco menos que o anterior.\nPV: quanto dano você aguenta receber.\n\nCRIT tem um limite de 60% e BLOQUEIO de 55%; tudo além do limite é desperdiçado em combate.\nPODER não é um atributo de combate: é uma soma ponderada dos outros cinco, usada para te parear com adversários de PvP de força semelhante.\nRoubo de vida tem um limite de 15% e Regeneração de 6% do seu PV máximo; tudo além desses limites não tem efeito adicional."
+    },
+    {
+      "id": "items",
+      "titulo": "Itens",
+      "corpo": "Os itens variam de Comum a Ascendente. Raridades superiores só se tornam equipáveis quando você atinge o nível exigido. Os itens podem ativar sinergias entre si. Clique com o botão direito em um item para bloqueá-lo (um item bloqueado não pode ser forjado ou desmontado por engano)."
+    },
+    {
+      "id": "market",
+      "titulo": "Mercado da Comunidade",
+      "corpo": "Itens Raros, Épicos e Lendários obtidos como drop podem ser vendidos/negociados com outros jogadores no Mercado da Comunidade Steam — o Mercado abre pouco depois do lançamento. Itens Comuns, Míticos e Ascendentes, drops de Boss e Lendários que você forjou são vinculados à conta e nunca são vendáveis. A venda é liberada no nível 15 em uma conta com pelo menos 7 dias, e você pode tornar vendáveis até 25 itens por semana (máximo de 8 por dia). O selo no card mostra o status de cada item, e a dica explica o motivo.\n\nQuando um item estiver vendável, pressione Vender para listá-lo no Mercado da Comunidade — ele sai do seu inventário até ser vendido ou você cancelar o anúncio na Steam."
+    },
+    {
+      "id": "progression",
+      "titulo": "Progressão",
+      "corpo": "Cada aumento de nível concede 5 pontos de atributo para distribuir entre PV, ATK, DEF, CRIT ou BLOQUEIO na tela Personagem. Você pode fazer respec dos seus atributos (o primeiro respec é gratuito, depois cada respec custa sempre o mesmo valor fixo). Subir de nível também libera mais slots de Perk e outros recursos. Complete as áreas para avançar; após a última, a Arena Eterna oferece ondas infinitas."
+    },
+    {
+      "id": "pvp",
+      "titulo": "PvP",
+      "corpo": "O PvP é assíncrono: você luta contra um instantâneo de outro jogador, não contra ele ao vivo. Uma batalha PvP é acionada a cada 3 a 7 minutos de combate. Vitórias aumentam seus Pontos de Ranking PvP e sua posição, além de renderem Escalpos; o matchmaking te pareia com adversários de Poder semelhante. Seus amigos da Steam também podem te desafiar enquanto você está offline. Um Ranking PvP acompanha os melhores jogadores de cada Temporada, que reinicia a cada mês, aproximadamente."
+    },
+    {
+      "id": "perks",
+      "titulo": "Perks & Poções",
+      "corpo": "Batalhas PvP rendem Escalpos, gastos na Loja em Perks e Poções. Perks são bônus passivos permanentes equipados em slots (mais slots são liberados conforme você sobe de nível). Equipar um novo Perk em um slot cheio envia o anterior para o seu depósito de Perks, que guarda um número limitado de Perks e cresce conforme você sobe de nível. Você também pode arrastar um Perk para fora de um slot para guardá-lo. Quando o depósito está cheio, destrua um Perk guardado para abrir espaço: Perks destruídos voltam para o conjunto da Loja e terão que ser comprados de novo. Poções concedem bônus temporários que você ativa durante a partida. A seleção de Perks e Poções da Loja é renovada a cada 24 horas.\nPoções não têm efeito no PvP."
+    },
+    {
+      "id": "resist",
+      "titulo": "Resistências Elementais",
+      "corpo": "Os inimigos podem ser fracos ou resistentes a elementos. Apenas as armas que você equipou afetam isso: os outros slots de equipamento não contam. Equipar uma arma de um elemento concede um bônus de 15% de dano contra inimigos fracos a ele (ou uma penalidade de 15% contra inimigos resistentes a ele); equipar duas armas do mesmo elemento eleva isso para 40%."
+    },
+    {
+      "id": "inventory",
+      "titulo": "Inventário",
+      "corpo": "O Inventário guarda os itens que você possui. Você pode filtrá-lo e ordená-lo. Ele começa com 150 itens e sua capacidade cresce conforme você progride; quando estiver cheio, quaisquer novos drops são perdidos, então mantenha-o livre. Itens dropados podem ser desmontados aqui em troca de Escalpos."
+    },
+    {
+      "id": "forge",
+      "titulo": "Forja",
+      "corpo": "Na Forja, uma certa quantidade de itens não equipados de uma raridade se combina em um único item da raridade seguinte. Cada raridade superior é desbloqueada para forja ao completar áreas específicas… continue progredindo para forjar itens melhores!"
+    },
+    {
+      "id": "thanks",
+      "titulo": "Agradecimentos",
+      "corpo": "Lootborne não seria o que é sem os jogadores dos seus testes fechados - obrigado por cada partida, cada relato e cada ideia.\n\nLapizza Lazuli\nFuricaVT\nPispita\nOn111 ﾀ\njosee.035\niPlayZ\nTenko Shimura\nCaronte\n[Wlock] Freakazoid\nBE"
+    }
+  ]
+}

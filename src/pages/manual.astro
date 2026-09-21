@@ -1,0 +1,72 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ui from '../data/ui-pt.json';
+import { withBase } from '../lib/base';
+
+const { manual } = ui;
+
+// Icone do jogo pra cada secao, quando existe um que caiba.
+const ICONES: Record<string, string> = {
+  combat: withBase('/ui/nav-guia.png'),
+  stats: withBase('/ui/nav-atributos.png'),
+  items: withBase('/ui/nav-itens.png'),
+  progression: withBase('/ui/nav-atributos.png'),
+  pvp: withBase('/ui/nav-inimigos.png'),
+  perks: withBase('/ui/nav-perks.png'),
+  resist: withBase('/ui/element-flame.png'),
+  inventory: withBase('/ui/nav-inventario.png'),
+  forge: withBase('/ui/nav-setores.png'),
+  market: withBase('/ui/nav-calculadora.png'),
+};
+---
+
+<BaseLayout
+  title="Manual do jogo"
+  banner="Manual"
+  description="O manual interno de Lootborne na íntegra, em português — texto oficial do jogo."
+>
+  <header class="mb-5">
+    <h1 class="font-display text-3xl md:text-4xl text-gold-bright mb-2">Manual do jogo</h1>
+    <p class="text-text-soft max-w-3xl text-sm leading-relaxed">
+      Estas são as {manual.length} seções do manual que o próprio Lootborne traz, copiadas
+      literalmente da tradução oficial (<code class="text-amber"
+        >Resources/localization/pt-BR.json</code
+      >). Nada aqui é resumo ou interpretação minha — é a explicação do jogo, na íntegra. O resto da
+      wiki existe justamente pra ir além do que esse texto cobre.
+    </p>
+  </header>
+
+  <nav class="panel p-3 mb-5">
+    <div class="text-[0.65rem] uppercase tracking-widest text-gold mb-2">Seções</div>
+    <div class="flex flex-wrap gap-1.5">
+      {
+        manual.map((s) => (
+          <a href={`#${s.id}`} class="chip">
+            {s.titulo}
+          </a>
+        ))
+      }
+    </div>
+  </nav>
+
+  <div class="space-y-4">
+    {
+      manual.map((s) => (
+        <section id={s.id} class="panel scroll-mt-20">
+          <h2 class="panel-head">
+            {ICONES[s.id] && <img src={ICONES[s.id]} alt="" width="14" height="14" class="pixel" />}
+            {s.titulo}
+          </h2>
+          <p class="p-4 text-sm text-text-soft leading-relaxed whitespace-pre-line">{s.corpo}</p>
+        </section>
+      ))
+    }
+  </div>
+
+  <p class="text-xs text-text-muted mt-6">
+    O manual é a fonte mais direta que existe sobre as regras do jogo, mas ele não traz números —
+    para os valores exatos veja <a href={withBase('/mecanicas')} class="text-gold hover:underline">Mecânicas</a>,
+    e para o que fazer com eles, o
+    <a href={withBase('/guia')} class="text-gold hover:underline">Guia do jogador</a>.
+  </p>
+</BaseLayout>

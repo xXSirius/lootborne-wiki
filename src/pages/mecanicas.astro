@@ -1,0 +1,345 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import constants from '../data/constants.json';
+import { withBase } from '../lib/base';
+
+const c = constants as Record<string, number | string | boolean>;
+---
+
+<BaseLayout
+  title="Mecânicas"
+  banner="Mecânicas"
+  description="Como o Lootborne funciona por baixo dos panos: fórmulas e valores reais extraídos dos arquivos do jogo."
+>
+  <header class="mb-10">
+    <p class="text-gold-bright text-sm font-semibold uppercase tracking-wide mb-2">Como o jogo funciona</p>
+    <h1 class="font-display text-3xl md:text-4xl font-semibold mb-4">Mecânicas do Lootborne</h1>
+    <p class="text-text-soft max-w-3xl">
+      Todo número nesta página foi extraído direto de <code class="text-gold-bright">GameConstants</code>,
+      a classe do próprio jogo que centraliza as constantes de balanceamento. São valores exatos, não
+      estimativas. Onde a <em>fórmula</em> que combina esses valores não pôde ser lida do código
+      (o jogo usa IL2CPP, que não decompila corpos de método), eu marco como <span class="text-gold">interpretação</span> —
+      o padrão mais provável dado o nome e o peso das constantes, não uma certeza absoluta.
+    </p>
+  </header>
+
+  <section class="mb-12">
+    <h2 class="font-display text-2xl font-semibold mb-3">O loop: stamina, não tempo</h2>
+    <p class="text-text-soft mb-4 max-w-3xl">
+      Lootborne é um idle RPG gated por <strong class="text-text-main">stamina</strong>, não por
+      tempo puro. Cada batalha custa stamina; quando acaba, seu personagem para até regenerar.
+    </p>
+    <div class="grid sm:grid-cols-3 gap-4">
+      <div class="panel p-4">
+        <div class="text-2xl font-display text-gold-bright">{c.STAMINA_MAX}</div>
+        <div class="text-sm text-text-soft">stamina máxima</div>
+      </div>
+      <div class="panel p-4">
+        <div class="text-2xl font-display text-gold-bright">{c.STAMINA_COST_PER_BATTLE}</div>
+        <div class="text-sm text-text-soft">custo por batalha</div>
+      </div>
+      <div class="panel p-4">
+        <div class="text-2xl font-display text-gold-bright">{(c.STAMINA_REGEN_PER_SEC as number).toFixed(3)}/s</div>
+        <div class="text-sm text-text-soft">
+          regen — 1 batalha a cada {((c.STAMINA_COST_PER_BATTLE as number) / (c.STAMINA_REGEN_PER_SEC as number)).toFixed(1)}s
+        </div>
+      </div>
+    </div>
+    <p class="text-text-soft mt-4 max-w-3xl">
+      Com stamina cheia (100) e <code>STAMINA_MIN_TO_BATTLE = {c.STAMINA_MIN_TO_BATTLE}</code>, dá pra
+      encadear várias batalhas antes de esperar regenerar. Pausa entre batalhas normal é de{' '}
+      <code>{c.PAUSE_BETWEEN_BATTLES}s</code>, sobe pra <code>{c.PAUSE_BETWEEN_BATTLES_WITH_DROP}s</code>{' '}
+      quando cai um item, e <code>{c.PAUSE_AFTER_SECTOR_CLEAR}s</code> ao limpar um setor. A simulação de
+      combate roda com <code>GAME_SPEED = {c.GAME_SPEED}</code>× e um turno a cada{' '}
+      <code>{c.COMBAT_TURN_INTERVAL}s</code>.
+    </p>
+  </section>
+
+  <section class="mb-12">
+    <h2 class="font-display text-2xl font-semibold mb-3">Second Wind — progresso offline</h2>
+    <p class="text-text-soft max-w-3xl mb-4">
+      Fechar o jogo não é tempo perdido. Existe um sistema de "segundo fôlego" que acumula um bônus
+      pra quando você volta:
+    </p>
+    <ul class="text-text-soft space-y-1.5 max-w-2xl list-disc list-inside">
+      <li>Acumula <code>{c.SECOND_WIND_ACCRUAL_PER_OFFLINE_HOUR}</code> por hora offline, até um teto de <code>{c.SECOND_WIND_MAX_HOURS}h</code></li>
+      <li>Quando ativo: <code>{c.SECOND_WIND_XP_MULTIPLIER}×</code> XP, <code>{c.SECOND_WIND_BLOODMARK_MULTIPLIER}×</code> moeda (Bloodmark), <code>{c.SECOND_WIND_DROP_CHANCE_MULTIPLIER}×</code> chance de drop (<code>{c.SECOND_WIND_DROP_CHANCE_MULTIPLIER_ARENA}×</code> na Arena)</li>
+      <li>Exige relógio do servidor pra validar (anti-cheat de "adiantar o relógio"): espera <code>{c.SECOND_WIND_CLOCK_WAIT_SECONDS}s</code> pra confirmar, com fallback de até <code>{c.SECOND_WIND_OFFLINE_FALLBACK_MAX_HOURS}h</code> se o servidor não responder</li>
+    </ul>
+    <p class="text-text-soft mt-3 max-w-2xl text-sm">
+      Na prática: vale a pena fechar o jogo por algumas horas em vez de deixar rodando pra sempre —
+      o bônus satura em {c.SECOND_WIND_MAX_HOURS}h offline.
+    </p>
+  </section>
+
+  <section class="mb-12">
+    <h2 class="font-display text-2xl font-semibold mb-3">Combate</h2>
+    <div class="grid sm:grid-cols-2 gap-4 mb-5">
+      <div class="panel p-4">
+        <div class="text-lg font-display">Crit</div>
+        <p class="text-text-soft text-sm">
+          Multiplicador de <code>{c.CRIT_MULTIPLIER}×</code> dano, taxa de crit tem teto de{' '}
+          <code>{c.CRIT_CAP}%</code>.
+        </p>
+      </div>
+      <div class="panel p-4">
+        <div class="text-lg font-display">Parry</div>
+        <p class="text-text-soft text-sm">Taxa de parry tem teto de <code>{c.PARRY_CAP}%</code>.</p>
+      </div>
+      <div class="panel p-4">
+        <div class="text-lg font-display">Variância de dano</div>
+        <p class="text-text-soft text-sm">
+          Cada golpe rola entre <code>{c.DMG_RANDOM_MIN}×</code> e <code>{c.DMG_RANDOM_MAX}×</code> do
+          dano base — ±20%.
+        </p>
+      </div>
+      <div class="panel p-4">
+        <div class="text-lg font-display">Ignorar defesa</div>
+        <p class="text-text-soft text-sm">
+          Efeitos de "ignorar defesa" têm teto de <code>{c.DEF_IGNORE_CAP}%</code>, ou{' '}
+          <code>{c.DEF_IGNORE_CAP_WITH_POTION}%</code> com a poção certa.
+        </p>
+      </div>
+    </div>
+    <div class="panel p-4 border-ascended/50">
+      <p class="text-sm text-ascended font-semibold mb-1">Fato — mitigação de defesa</p>
+      <p class="text-text-soft text-sm">
+        <code class="text-amber">mitigação = DEF / (DEF + {c.DEF_K})</code>, com{' '}
+        <code class="text-amber">DEF_K = {c.DEF_K}</code> extraído do jogo. O manual do próprio
+        Lootborne confirma a curva ponto a ponto: <em>"30 de DEF reduz o dano em um terço, 60 pela
+        metade, 120 em dois terços"</em> — exatamente o que a fórmula produz. Ele também diz que{' '}
+        <strong class="text-text-main">"DEF sempre reduz, nunca anula"</strong>.
+      </p>
+      <p class="text-text-soft text-sm mt-2">
+        Cuidado com a leitura ingênua disso: o manual diz que "cada ponto extra vale um pouco menos
+        que o anterior", e isso é verdade para a <em>porcentagem reduzida</em> — mas em{' '}
+        <strong class="text-text-main">HP efetivo o ganho é linear</strong>: cada {c.DEF_K} de DEF
+        soma 1× do seu HP base em sobrevivência, sem nunca perder eficiência. É por isso que DEF não
+        tem ponto de saturação na prática. A conta completa está em{' '}
+        <a href={withBase('/atributos')} class="text-gold hover:underline">Atributos</a>.
+      </p>
+    </div>
+    <div class="panel p-4 border-ascended/50 mt-3">
+      <p class="text-sm text-ascended font-semibold mb-1">Fato — ordem de resolução do golpe</p>
+      <p class="text-text-soft text-sm">
+        Segundo o manual, cada acerto resolve sempre nesta ordem:
+        <strong class="text-text-main">BLOQUEIO</strong> (chance de anular o golpe por completo) →
+        <strong class="text-text-main">ATK</strong> (o dano, sorteado entre{' '}
+        <strong class="text-text-main"> 80% e 120%</strong>) →
+        <strong class="text-text-main">CRIT</strong> (chance de dobrar esse valor) →
+        <strong class="text-text-main">DEF</strong> (divide o que sobrou) →
+        <strong class="text-text-main">PV</strong>. O sorteio de 80–120% no dano é um detalhe que não
+        aparece em nenhuma constante — só no manual.
+      </p>
+      <p class="text-text-soft text-sm mt-2">
+        O manual também traz dois tetos que não estão nas constantes:
+        <strong class="text-text-main">roubo de vida limitado a 15%</strong> e
+        <strong class="text-text-main">regeneração a 6% do PV máximo</strong>; o que passar disso não
+        tem efeito. E esclarece que <strong class="text-text-main">PODER não é atributo de combate</strong>
+        — é uma soma ponderada dos outros cinco, usada só pra te parear com adversários de PvP de
+        força semelhante.
+      </p>
+    </div>
+  </section>
+
+  <section class="mb-12">
+    <h2 class="font-display text-2xl font-semibold mb-3">Nível, XP e "Power Score"</h2>
+    <div class="grid sm:grid-cols-3 gap-4 mb-5">
+      <div class="panel p-4">
+        <div class="text-2xl font-display text-gold-bright">{c.MAX_LEVEL}</div>
+        <div class="text-sm text-text-soft">nível máximo</div>
+      </div>
+      <div class="panel p-4">
+        <div class="text-2xl font-display text-gold-bright">~{c.KILLS_PER_LEVEL}</div>
+        <div class="text-sm text-text-soft">abates por nível (média de referência do jogo)</div>
+      </div>
+      <div class="panel p-4">
+        <div class="text-2xl font-display text-gold-bright">{c.PS_MAX_LEGIT_L60}</div>
+        <div class="text-sm text-text-soft">Power Score máximo "legítimo" no nível 60</div>
+      </div>
+    </div>
+    <div class="panel p-4 border-gold/40 mb-5">
+      <p class="text-sm text-gold font-semibold mb-1">Interpretação — curva de XP</p>
+      <p class="text-text-soft text-sm">
+        <code>XP_MULTIPLIER = {c.XP_MULTIPLIER}</code> e <code>XP_EXPONENT = {c.XP_EXPONENT}</code> em
+        conjunto são o formato padrão de uma curva de XP exponencial:{' '}
+        <code>xpParaProximoNível ≈ {c.XP_MULTIPLIER} × nível^{c.XP_EXPONENT}</code>. Derrotas custam{' '}
+        <code>{c.XP_DEFEAT_MULTIPLIER}×</code> o XP de uma vitória (você ainda ganha algo ao perder).
+        Existe também uma penalidade de <code>{(c.XP_SCALING_PENALTY as number) * 100}%</code> por
+        nível de diferença quando o inimigo é muito mais fraco que você (com piso de{' '}
+        {c.XP_SCALING_MIN}, e uma banda livre de {c.XP_OVERLEVEL_FREE_BAND} níveis antes disso entrar
+        em ação) — ou seja, <strong>farmar setor muito abaixo do seu nível rende cada vez menos XP</strong>.
+      </p>
+    </div>
+    <div class="panel p-4 border-gold/40">
+      <p class="text-sm text-gold font-semibold mb-1">Interpretação — Power Score (PS)</p>
+      <p class="text-text-soft text-sm">
+        O jogo pesa os 5 stats de forma bem desigual pra calcular o "poder" de um item/personagem:
+        HP × <code>{c.PS_HP_WEIGHT}</code>, ATK × <code>{c.PS_ATK_WEIGHT}</code>, DEF ×{' '}
+        <code>{c.PS_DEF_WEIGHT}</code>, Crit × <code>{c.PS_CRIT_WEIGHT}</code>, Parry ×{' '}
+        <code>{c.PS_PARRY_WEIGHT}</code>. Repare que <strong>ATK pesa muito mais que HP</strong>{' '}
+        (9 vs 0.8) — um ponto de ataque vale, nessa métrica, mais de <strong>11× um ponto de HP</strong>.
+        Isso é usado tanto pra decidir o nível mínimo exigido pra equipar um item quanto, muito
+        provavelmente, como o número por trás do teto anti-cheat de {c.PS_MAX_LEGIT_L60} no nível 60.
+      </p>
+    </div>
+  </section>
+
+  <section class="mb-12">
+    <h2 class="font-display text-2xl font-semibold mb-3">Desbloqueio de raridade por nível</h2>
+    <p class="text-text-soft max-w-2xl mb-4">
+      Você só pode equipar (ou a raridade só começa a dropar de verdade) a partir de certo nível:
+    </p>
+    <div class="flex flex-wrap gap-3">
+      {
+        [
+          ['Common', 1],
+          ['Rare', c.RARITY_UNLOCK_RARE],
+          ['Epic', c.RARITY_UNLOCK_EPIC],
+          ['Legendary', c.RARITY_UNLOCK_LEGENDARY],
+          ['Mythic', c.RARITY_UNLOCK_MYTHIC],
+          ['Ascended', c.RARITY_UNLOCK_ASCENDED],
+        ].map(([name, lvl]) => (
+          <div class="panel px-4 py-3">
+            <div class="rarity-badge" style={{ color: `var(--r-${String(name).toLowerCase()})` }}>
+              {name}
+            </div>
+            <div class="text-text-soft text-sm">nível {lvl}</div>
+          </div>
+        ))
+      }
+    </div>
+    <p class="text-text-soft mt-4 max-w-2xl text-sm">
+      Magic Cast (conjurar/usar efeitos mágicos de item, provavelmente) exige raridade mínima{' '}
+      <strong class="text-text-main">{c.MAGIC_CAST_MIN_RARITY}</strong>. Itens acima do seu nível ficam
+      "over-leveled": o drop de raridades altas é gradualmente reduzido quando você está muito acima
+      do setor —{' '}
+      <code>{(c.OVERLEVEL_DROP_DEMOTE_PER_LEVEL as number) * 100}%</code> de redução por nível de
+      diferença, até um teto de <code>{(c.OVERLEVEL_DROP_DEMOTE_CAP as number) * 100}%</code>, com uma
+      banda livre de {c.OVERLEVEL_DROP_FREE_BAND} níveis antes de começar a penalizar.
+    </p>
+  </section>
+
+  <section class="mb-12">
+    <h2 class="font-display text-2xl font-semibold mb-3">Inventário</h2>
+    <div class="grid sm:grid-cols-3 gap-4">
+      <div class="panel p-4">
+        <div class="text-2xl font-display text-gold-bright">{c.INVENTORY_CAP_T1}</div>
+        <div class="text-sm text-text-soft">capacidade inicial</div>
+      </div>
+      <div class="panel p-4">
+        <div class="text-2xl font-display text-gold-bright">{c.INVENTORY_CAP_T2}</div>
+        <div class="text-sm text-text-soft">a partir do nível {c.INVENTORY_CAP_T2_LEVEL}</div>
+      </div>
+      <div class="panel p-4">
+        <div class="text-2xl font-display text-gold-bright">{c.INVENTORY_CAP_T3}</div>
+        <div class="text-sm text-text-soft">a partir do nível {c.INVENTORY_CAP_T3_LEVEL}</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="mb-12">
+    <h2 class="font-display text-2xl font-semibold mb-3">Forja e desmonte</h2>
+    <p class="text-text-soft max-w-2xl mb-4">
+      Item duplicado dá pra desmontar em <strong class="text-text-main">Bloodmark</strong> (moeda de
+      forja) — o valor sobe com a raridade:
+    </p>
+    <div class="flex flex-wrap gap-3 mb-5">
+      {
+        [
+          ['Common', c.DISMANTLE_BM_COMMON],
+          ['Rare', c.DISMANTLE_BM_RARE],
+          ['Epic', c.DISMANTLE_BM_EPIC],
+          ['Legendary', c.DISMANTLE_BM_LEGENDARY],
+          ['Mythic', c.DISMANTLE_BM_MYTHIC],
+          ['Ascended', c.DISMANTLE_BM_ASCENDED],
+        ].map(([name, bm]) => (
+          <div class="panel px-4 py-3">
+            <div class="rarity-badge" style={{ color: `var(--r-${String(name).toLowerCase()})` }}>
+              {name}
+            </div>
+            <div class="text-text-soft text-sm">{bm} Bloodmark</div>
+          </div>
+        ))
+      }
+    </div>
+    <p class="text-text-soft text-sm max-w-2xl">
+      Forjar rumo a Mythic exige um recorde de onda na Arena de pelo menos{' '}
+      <code>{c.FORGE_MYTHIC_MIN_WAVE_RECORD}</code>. O custo exato em Bloodmark por raridade-alvo é uma
+      tabela (<code>FORGE_COST_BY_TARGET</code>) que não consegui recuperar — só a constante isolada
+      acima.
+    </p>
+  </section>
+
+  <section class="mb-12">
+    <h2 class="font-display text-2xl font-semibold mb-3">PvP assíncrono</h2>
+    <p class="text-text-soft max-w-3xl mb-4">
+      Sem fila, sem lobby: seu build fica disponível pra outros jogadores desafiarem a qualquer
+      momento, e o resultado é validado por replay (até <code>{c.PVP_REPLAY_MAX_FILES}</code>{' '}
+      replays guardados, upload de até <code>{c.PVP_REPLAY_MAX_UPLOAD_B64}</code> bytes em base64,
+      simulado a <code>{c.PVP_REPLAY_TURN_SECONDS}s</code> por turno).
+    </p>
+    <div class="grid sm:grid-cols-2 gap-4">
+      <div class="panel p-4">
+        <div class="text-lg font-display text-common">Moeda de PvP</div>
+        <p class="text-text-soft text-sm">
+          <code>+{c.PVP_CURRENCY_WIN}</code> vitória / <code>+{c.PVP_CURRENCY_LOSE}</code> derrota
+        </p>
+      </div>
+      <div class="panel p-4">
+        <div class="text-lg font-display">Chance de drop</div>
+        <p class="text-text-soft text-sm">
+          <code>{(c.PVP_WIN_DROP_CHANCE as number) * 100}%</code> vitória /{' '}
+          <code>{(c.PVP_LOSS_DROP_CHANCE as number) * 100}%</code> derrota
+        </p>
+      </div>
+    </div>
+    <p class="text-text-soft text-sm mt-4 max-w-2xl">
+      Cada janela de disputa dura <code>{c.PVP_TIME_TRIGGER_SECONDS}s</code> (~
+      {Math.round((c.PVP_TIME_TRIGGER_SECONDS as number) / 60)} min). Progresso offline conta a{' '}
+      <code>{(c.PVP_XP_OFFLINE_FACTOR as number) * 100}%</code> do valor normal.
+    </p>
+  </section>
+
+  <section class="mb-12">
+    <h2 class="font-display text-2xl font-semibold mb-3">Arena (modo infinito)</h2>
+    <p class="text-text-soft max-w-3xl mb-4">
+      A Arena escala os inimigos onda a onda com uma curva quadrática — cresce devagar no começo e
+      acelera:
+    </p>
+    <ul class="text-text-soft space-y-1.5 max-w-2xl list-disc list-inside text-sm">
+      <li>{c.ARENA_ENEMIES_PER_WAVE} inimigos por onda, boss a cada {c.ARENA_BOSS_EVERY_WAVES} ondas</li>
+      <li>Boss tem <code>{c.ARENA_BOSS_HP_FACTOR}×</code> HP e <code>{c.ARENA_BOSS_ATK_FACTOR}×</code> ATK da onda normal</li>
+      <li>
+        Escala de HP: base <code>{c.ARENA_SCALE_BASE_HP}×</code>, termo linear{' '}
+        <code>{c.ARENA_HP_LIN}</code>, termo quadrático <code>{c.ARENA_HP_QUAD}</code> por onda
+      </li>
+      <li>
+        Escala de ATK: base <code>{c.ARENA_SCALE_BASE_ATK}×</code>, termo linear{' '}
+        <code>{c.ARENA_ATK_LIN}</code>, termo quadrático <code>{c.ARENA_ATK_QUAD}</code> por onda
+      </li>
+      <li>Regen entre ondas: <code>{(c.ARENA_REGEN_BASELINE_PCT as number) * 100}%</code> (<code>{(c.ARENA_REGEN_EARLY_PCT as number) * 100}%</code> nas primeiras {c.ARENA_REGEN_STEP_WAVE} ondas)</li>
+    </ul>
+  </section>
+
+  <section class="mb-12">
+    <h2 class="font-display text-2xl font-semibold mb-3">Setores e drop</h2>
+    <p class="text-text-soft max-w-2xl mb-2">
+      Cada setor define sua própria tabela de drop por raridade — veja os valores reais na página de{' '}
+      <a href={withBase('/setores')} class="text-gold-bright hover:underline">Setores</a>. Existe um sistema de{' '}
+      <strong class="text-text-main">pity</strong>: depois de <code>{c.PITY_DROP_THRESHOLD}</code>{' '}
+      batalhas sem drop bom, a chance sobe (a curva exata por setor não foi recuperável).
+    </p>
+  </section>
+
+  <section class="mb-4">
+    <h2 class="font-display text-2xl font-semibold mb-3">Sinergia mono-elemento</h2>
+    <p class="text-text-soft max-w-2xl">
+      Montar um set com o mesmo elemento em todos os 6 slots ativa um multiplicador de{' '}
+      <code>{c.MONO_SYNERGY_MULTIPLIER}×</code> — <strong class="text-text-main">+30%</strong>. Isso é
+      além dos bônus individuais que cada item já dá "para cada outro item do elemento X" (visíveis na
+      página de <a href={withBase('/itens')} class="text-gold-bright hover:underline">Itens</a>). É um forte incentivo a
+      não misturar elementos aleatoriamente num build de fim de jogo.
+    </p>
+  </section>
+</BaseLayout>

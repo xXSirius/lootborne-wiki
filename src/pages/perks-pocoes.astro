@@ -1,0 +1,161 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import perksData from '../data/perks.json';
+import consumablesData from '../data/consumables.json';
+import constants from '../data/constants.json';
+import { withBase } from '../lib/base';
+
+const c = constants as unknown as Record<string, number>;
+const { perks, custoPorTier } = perksData;
+const { consumables, semLocalizacao } = consumablesData;
+---
+
+<BaseLayout
+  title="Perks & Poções"
+  banner="Perks & Poções"
+  description="Os 31 perks e 21 poções de Lootborne, com o efeito oficial de cada um em português."
+>
+  <header class="mb-5">
+    <h1 class="font-display text-3xl md:text-4xl text-gold-bright mb-2">
+      {perks.length} perks · {consumables.length} poções
+    </h1>
+    <div class="panel p-4 max-w-3xl">
+      <p class="text-sm text-text-soft leading-relaxed">
+        Nome, ícone <strong class="text-text-main">e efeito</strong> vêm dos arquivos do jogo: o
+        efeito é o texto que a própria loja te mostra, tirado da tradução oficial (<code
+          class="text-amber">perk.N.effect</code
+        >). O número do perk casa com o do arquivo de ícone, então a ligação entre nome e efeito é
+        direta, não deduzida.
+      </p>
+    </div>
+  </header>
+
+  <section class="mb-8">
+    <div class="banner mb-4"><span>Custo</span></div>
+    <div class="flex flex-wrap gap-2">
+      {
+        Object.entries(custoPorTier).map(([tier, cost]) => (
+          <div class="stat-box">
+            <dt>{cost}</dt>
+            <dd>escalpos · tier {tier}</dd>
+          </div>
+        ))
+      }
+      <div class="stat-box">
+        <dt>{c.PERK_SHOP_MIN_OFFERS}</dt>
+        <dd>ofertas mín. na loja</dd>
+      </div>
+    </div>
+    <p class="text-text-soft text-sm mt-3 max-w-2xl">{perksData.custoNota}</p>
+  </section>
+
+  <section class="mb-10">
+    <div class="banner mb-4"><span>Perks</span></div>
+    <div class="grid md:grid-cols-2 gap-2.5">
+      {
+        perks.map((p) => (
+          <article class="panel p-3 flex gap-3">
+            <div class="slot w-12 h-12 shrink-0">
+              <img
+                src={withBase(`/icons/perks/${p.icon}`)}
+                alt={p.name}
+                width="32"
+                height="32"
+                loading="lazy"
+                class="w-[70%] h-[70%] object-contain"
+              />
+            </div>
+            <div class="min-w-0">
+              <div class="flex items-baseline gap-2 flex-wrap">
+                <span class="text-text-muted text-[0.65rem]">#{p.id}</span>
+                <h3 class="font-semibold text-gold-bright">{p.name}</h3>
+                <span class="text-[0.62rem] text-text-muted italic">{p.nameEn}</span>
+              </div>
+              <p class="text-sm text-text-soft mt-1 leading-relaxed">{p.effect}</p>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="mb-10" id="pocoes">
+    <div class="banner mb-4"><span>Poções</span></div>
+    <p class="text-text-soft text-sm mb-4 max-w-3xl">{consumablesData.slotsNota}</p>
+    <div class="grid md:grid-cols-2 gap-2.5">
+      {
+        consumables.map((p) => (
+          <article class="panel p-3 flex gap-3">
+            <div class="slot w-12 h-12 shrink-0">
+              {p.icon ? (
+                <img
+                  src={withBase(`/icons/consumables/${p.icon}`)}
+                  alt={p.name}
+                  width="32"
+                  height="32"
+                  loading="lazy"
+                  class="w-[70%] h-[70%] object-contain"
+                />
+              ) : (
+                <span class="text-text-muted text-lg" title="sem ícone nos arquivos">
+                  ?
+                </span>
+              )}
+            </div>
+            <div class="min-w-0">
+              <div class="flex items-baseline gap-2 flex-wrap">
+                <span class="text-text-muted text-[0.65rem]">#{p.id}</span>
+                <h3 class="font-semibold text-gold-bright">{p.name}</h3>
+                <span class="text-[0.62rem] text-text-muted italic">{p.nameEn}</span>
+              </div>
+              <p class="text-sm text-text-soft mt-1 leading-relaxed">{p.effect}</p>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <section>
+    <div class="banner mb-4"><span>Pontas soltas</span></div>
+    <div class="panel p-4 max-w-3xl">
+      <p class="text-sm text-text-soft leading-relaxed mb-3">
+        A localização numera 21 poções, mas a pasta de ícones tem 23 arquivos — e os dois conjuntos
+        não coincidem por completo. Registro a diferença em vez de preencher com chute:
+      </p>
+      <ul class="text-sm text-text-soft space-y-1.5">
+        <li>
+          <strong class="text-gold">Contagem vs. Steam:</strong>{' '}
+          a página da loja anuncia 26 perks e 25 poções. Os arquivos trazem 31 perks — todos com
+          nome e efeito traduzidos, o que sugere que estão ativos — e 21 poções com texto. Não dá pra
+          resolver essa diferença sem ver a loja no jogo.
+        </li>
+        <li>
+          <strong class="text-gold">Com texto, sem ícone:</strong>{' '}
+          {consumables.filter((p) => !p.icon).map((p) => p.name).join(', ')} — o efeito está acima,
+          mas não achei arquivo de ícone correspondente.
+        </li>
+        <li>
+          <strong class="text-gold">Com ícone, sem texto:</strong>{' '}
+          {semLocalizacao.map((s) => s.nome).join(', ')} — existem como arte, mas nenhuma tradução
+          descreve o que fazem. Provavelmente foram aposentadas antes do lançamento.
+        </li>
+      </ul>
+      <div class="flex gap-2 mt-3">
+        {
+          semLocalizacao.map((s) => (
+            <div class="slot w-10 h-10" title={s.nome}>
+              <img
+                src={withBase(`/icons/consumables/${s.icon}`)}
+                alt={s.nome}
+                width="28"
+                height="28"
+                class="w-[70%] h-[70%] object-contain opacity-60"
+              />
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+</BaseLayout>

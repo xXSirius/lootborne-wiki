@@ -1,0 +1,205 @@
+[
+  {
+    "id": 0,
+    "name": "Outskirts",
+    "totalEnemies": 30,
+    "dropRates": {
+      "common": 92,
+      "rare": 8,
+      "epic": 0,
+      "legendary": 0,
+      "mythic": 0
+    },
+    "clearRewardRarity": "Rare",
+    "levelUpRarityCap": "Rare",
+    "enemies": [
+      "Sewer Rat",
+      "Black Hornet",
+      "Wild Boar",
+      "Widow Spider",
+      "Rabid Wolf"
+    ],
+    "namePt": "Subúrbio",
+    "enemiesPt": [
+      "Rato de Esgoto",
+      "Vespa Negra",
+      "Javali",
+      "Aranha Negra",
+      "Lobo Raivoso"
+    ]
+  },
+  {
+    "id": 1,
+    "name": "Village",
+    "totalEnemies": 54,
+    "dropRates": {
+      "common": 85,
+      "rare": 15,
+      "epic": 0,
+      "legendary": 0,
+      "mythic": 0
+    },
+    "clearRewardRarity": "Rare",
+    "levelUpRarityCap": "Rare",
+    "enemies": [
+      "Thief",
+      "Sewer Scum",
+      "Thug",
+      "Bandit",
+      "Cutthroat"
+    ],
+    "namePt": "Vila",
+    "enemiesPt": [
+      "Ladrão",
+      "Escória do Esgoto",
+      "Capanga",
+      "Bandido",
+      "Degolador"
+    ]
+  },
+  {
+    "id": 2,
+    "name": "Forest",
+    "totalEnemies": 58,
+    "dropRates": {
+      "common": 74,
+      "rare": 25,
+      "epic": 1,
+      "legendary": 0,
+      "mythic": 0
+    },
+    "clearRewardRarity": "Epic",
+    "levelUpRarityCap": "Rare",
+    "enemies": [
+      "Kobold",
+      "Goblin",
+      "Gnoll",
+      "Orc",
+      "Hobgoblin"
+    ],
+    "namePt": "Floresta",
+    "enemiesPt": [
+      "Kobold",
+      "Goblin",
+      "Gnoll",
+      "Orc",
+      "Hobgoblin"
+    ]
+  },
+  {
+    "id": 3,
+    "name": "Graveyard",
+    "totalEnemies": 63,
+    "dropRates": {
+      "common": 54,
+      "rare": 32,
+      "epic": 14,
+      "legendary": 0,
+      "mythic": 0
+    },
+    "clearRewardRarity": "Epic",
+    "levelUpRarityCap": "Epic",
+    "enemies": [
+      "Graverobber",
+      "Crypt Bats",
+      "Skeleton",
+      "Zombie",
+      "Carrion Ghoul"
+    ],
+    "namePt": "Cemitério",
+    "enemiesPt": [
+      "Ladrão de Túmulos",
+      "Morcegos",
+      "Esqueleto",
+      "Zumbi",
+      "Ghoul Cadavérico"
+    ]
+  },
+  {
+    "id": 4,
+    "name": "War Camp",
+    "totalEnemies": 67,
+    "dropRates": {
+      "common": 39,
+      "rare": 36,
+      "epic": 25,
+      "legendary": 0,
+      "mythic": 0
+    },
+    "clearRewardRarity": "Epic",
+    "levelUpRarityCap": "Epic",
+    "enemies": [
+      "Black Orc",
+      "Troll",
+      "Goblin Rider",
+      "Butcher",
+      "Ogre"
+    ],
+    "namePt": "Acampamento de Guerra",
+    "enemiesPt": [
+      "Orc Negro",
+      "Troll",
+      "Cavaleiro Goblin",
+      "Açougueiro",
+      "Ogro"
+    ]
+  },
+  {
+    "id": 5,
+    "name": "Uhn-Baa Gorge",
+    "totalEnemies": 70,
+    "dropRates": {
+      "common": 30.5,
+      "rare": 36,
+      "epic": 33,
+      "legendary": 0.5,
+      "mythic": 0
+    },
+    "clearRewardRarity": "Legendary",
+    "levelUpRarityCap": "Epic",
+    "enemies": [
+      "Deserter",
+      "Marauder",
+      "Cultist",
+      "Giant Worm",
+      "Harpy"
+    ],
+    "namePt": "Desfiladeiro de Uhn-Baa",
+    "enemiesPt": [
+      "Desertor",
+      "Saqueador",
+      "Cultista",
+      "Verme Gigante",
+      "Harpia"
+    ]
+  },
+  {
+    "id": 6,
+    "name": "Cave",
+    "totalEnemies": 70,
+    "dropRates": {
+      "common": 26,
+      "rare": 32,
+      "epic": 40,
+      "legendary": 2,
+      "mythic": 0
+    },
+    "clearRewardRarity": "Legendary",
+    "levelUpRarityCap": "Legendary",
+    "enemies": [
+      "Dwarf",
+      "Pit Scum",
+      "Hole Dweller",
+      "Basilisk",
+      "Black Dragon"
+    ],
+    "namePt": "Abissombrio",
+    "enemiesPt": [
+      "Anão",
+      "Escória do Poço",
+      "Habitante do Buraco",
+      "Basilisco",
+      "Dragão Negro"
+    ]
+  }
+]

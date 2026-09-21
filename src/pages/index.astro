@@ -1,0 +1,191 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import items from '../data/items.json';
+import enemies from '../data/enemies.json';
+import sectors from '../data/sectors.json';
+import perks from '../data/perks.json';
+import consumables from '../data/consumables.json';
+import constants from '../data/constants.json';
+import { ORDEM_SLOT, ORDEM_RARIDADE, slotLabel, rarityColor } from '../lib/labels';
+import { withBase } from '../lib/base';
+
+const c = constants as unknown as Record<string, number>;
+
+const stats = [
+  { n: items.length, l: 'itens' },
+  { n: enemies.length, l: 'inimigos' },
+  { n: sectors.length, l: 'setores' },
+  { n: perks.perks.length, l: 'perks' },
+  { n: consumables.consumables.length, l: 'poções' },
+  { n: c.MAX_LEVEL, l: 'nível máx.' },
+];
+
+// Um item por slot, o de maior raridade — vira a "vitrine" de equipamento,
+// no lugar do painel de heroi da referencia.
+const showcase = ORDEM_SLOT.map((slot) => {
+  const melhor = items
+    .filter((i) => i.slot === slot)
+    .reduce((a, b) => (ORDEM_RARIDADE.indexOf(b.rarity) > ORDEM_RARIDADE.indexOf(a.rarity) ? b : a));
+  return { slot, item: melhor };
+});
+
+const start = [
+  {
+    href: withBase('/guia'),
+    icon: withBase('/ui/nav-guia.png'),
+    title: 'Guia do jogador',
+    desc: 'A rotina de farm, os erros que mais custam progresso e qual elemento levar em cada setor.',
+  },
+  {
+    href: withBase('/atributos'),
+    icon: withBase('/ui/nav-atributos.png'),
+    title: 'Atributos & pontos',
+    desc: 'Onde colocar os 5 pontos de cada nível — tetos, curvas e o que dá mais retorno.',
+  },
+  {
+    href: withBase('/manual'),
+    icon: withBase('/ui/nav-manual.png'),
+    title: 'Manual do jogo',
+    desc: 'As 11 seções do manual interno, na íntegra, em português.',
+  },
+];
+
+const browse = [
+  { href: withBase('/itens'), icon: withBase('/ui/nav-itens.png'), title: 'Itens', desc: 'Atributos, efeitos e ícones.', count: items.length },
+  { href: withBase('/inimigos'), icon: withBase('/ui/nav-inimigos.png'), title: 'Inimigos', desc: 'Stats por variante e fraquezas.', count: enemies.length },
+  { href: withBase('/setores'), icon: withBase('/ui/nav-setores.png'), title: 'Setores', desc: 'Tabela de drop e recompensa.', count: sectors.length },
+  { href: withBase('/perks-pocoes'), icon: withBase('/ui/nav-perks.png'), title: 'Perks & Poções', desc: 'Efeito oficial de cada um.', count: perks.perks.length + consumables.consumables.length },
+  { href: withBase('/mecanicas'), icon: withBase('/ui/nav-mecanicas.png'), title: 'Mecânicas', desc: 'Fórmulas e constantes reais.' },
+  { href: withBase('/calculadora'), icon: withBase('/ui/nav-calculadora.png'), title: 'Calculadora', desc: 'Comparador de item e Power Score.' },
+];
+---
+
+<BaseLayout title="Início">
+  <section class="panel filigree mb-6">
+    <div class="p-6 md:p-8 grid lg:grid-cols-[1.35fr_1fr] gap-8 items-center">
+      <div>
+        <h1 class="font-display text-4xl md:text-5xl text-gold-bright leading-tight mb-1">
+          LOOTBORNE
+        </h1>
+        <p class="font-display text-2xl md:text-3xl text-copper-light mb-4">Wiki</p>
+        <p class="text-text-soft mb-5 max-w-xl text-sm leading-relaxed">
+          Base de consulta do idle RPG dark fantasy que roda na sua barra de tarefas. Item, inimigo,
+          setor e fórmula — tudo <strong class="text-text-main">extraído dos arquivos do jogo</strong>,
+          não estimado. Os nomes e textos são os da tradução oficial em português. Onde algo é
+          interpretação minha, está dito na cara.
+        </p>
+        <div class="flex flex-wrap gap-2 mb-6">
+          <a href={withBase('/guia')} class="btn">
+            <img src={withBase('/ui/nav-guia.png')} alt="" width="14" height="14" class="pixel" />
+            Guia do jogador
+          </a>
+          <a href={withBase('/itens')} class="btn btn-ghost">
+            <img src={withBase('/ui/nav-itens.png')} alt="" width="14" height="14" class="pixel" />
+            Explorar itens
+          </a>
+        </div>
+        <dl class="grid grid-cols-3 sm:grid-cols-6 gap-1.5">
+          {
+            stats.map((s) => (
+              <div class="stat-box">
+                <dt>{s.n}</dt>
+                <dd>{s.l}</dd>
+              </div>
+            ))
+          }
+        </dl>
+      </div>
+
+      <div class="panel-deep">
+        <div class="panel-head !bg-transparent border-b border-copper text-xs">
+          <img src={withBase('/ui/nav-itens.png')} alt="" width="12" height="12" class="pixel" />
+          Equipamento
+        </div>
+        <div class="p-4 grid grid-cols-3 gap-2.5">
+          {
+            showcase.map(({ slot, item }) => (
+              <a
+                href={withBase(`/itens?q=${encodeURIComponent(item.namePt)}`)}
+                class="group"
+                title={`${item.namePt} — ${slotLabel(slot)}`}
+              >
+                <div
+                  class="slot aspect-square w-full"
+                  style={`box-shadow: inset 0 0 0 1px color-mix(in srgb, ${rarityColor(item.rarity)} 55%, transparent)`}
+                >
+                  <img
+                    src={withBase(`/icons/items/${item.icon}`)}
+                    alt={item.namePt}
+                    width="28"
+                    height="28"
+                    class="w-[72%] h-[72%] object-contain"
+                  />
+                </div>
+                <div class="text-[0.6rem] text-center text-text-muted mt-1 group-hover:text-gold truncate">
+                  {slotLabel(slot)}
+                </div>
+              </a>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="banner mb-4"><span>Comece por aqui</span></div>
+  <div class="grid md:grid-cols-3 gap-3 mb-8">
+    {
+      start.map((l) => (
+        <a href={l.href} class="panel p-4 hover:border-gold transition-colors block">
+          <div class="flex items-center gap-2 mb-1.5">
+            <img src={l.icon} alt="" width="16" height="16" class="pixel" />
+            <h2 class="font-semibold text-base text-gold-bright">{l.title}</h2>
+          </div>
+          <p class="text-text-soft text-sm leading-relaxed">{l.desc}</p>
+        </a>
+      ))
+    }
+  </div>
+
+  <div class="banner mb-4"><span>Base de dados</span></div>
+  <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-8">
+    {
+      browse.map((l) => (
+        <a href={l.href} class="panel p-4 hover:border-gold transition-colors block">
+          <div class="flex items-center gap-2">
+            <img src={l.icon} alt="" width="14" height="14" class="pixel" />
+            <h2 class="font-semibold text-sm text-gold">{l.title}</h2>
+            {l.count && <span class="ml-auto text-xs text-text-muted">{l.count}</span>}
+          </div>
+          <p class="text-text-soft text-sm mt-1">{l.desc}</p>
+        </a>
+      ))
+    }
+  </div>
+
+  <div class="banner mb-4"><span>Sobre os dados</span></div>
+  <div class="grid md:grid-cols-3 gap-3">
+    <div class="panel p-4">
+      <h3 class="font-semibold mb-1.5 text-ascended text-base">Fato</h3>
+      <p class="text-text-soft text-sm leading-relaxed">
+        Itens, inimigos, setores, ícones e os textos em português vêm direto dos assets e da
+        localização do jogo. As constantes de balanceamento vêm da classe de configuração interna.
+        São valores lidos, não inferidos.
+      </p>
+    </div>
+    <div class="panel p-4">
+      <h3 class="font-semibold mb-1.5 text-gold text-base">Interpretação</h3>
+      <p class="text-text-soft text-sm leading-relaxed">
+        Fórmulas que combinam essas constantes (mitigação de DEF, curva de XP, Power Score) não
+        decompilam. Onde eu deduzi o formato, está marcado como interpretação na própria página.
+      </p>
+    </div>
+    <div class="panel p-4">
+      <h3 class="font-semibold mb-1.5 text-text-muted text-base">Em aberto</h3>
+      <p class="text-text-soft text-sm leading-relaxed">
+        Quanto rende cada ponto de atributo, e o efeito de 3 poções que existem na localização mas
+        não têm ícone. Confere no jogo e a wiki é atualizada.
+      </p>
+    </div>
+  </div>
+</BaseLayout>

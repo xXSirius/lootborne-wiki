@@ -1,0 +1,25 @@
+{
+  "name": "lootborne-wiki",
+  "version": "1.0.0",
+  "description": "Wiki pessoal de Lootborne — mecânicas, itens, inimigos e setores extraídos dos dados reais do jogo.",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "extract-data": "node scripts/extract-data.mjs"
+  },
+  "devDependencies": {
+    "js-yaml": "^5.4.2",
+    "pngjs": "^7.0.0"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.3.3",
+    "astro": "^7.3.3",
+    "tailwindcss": "^4.3.3"
+  },
+  "allowScripts": {
+    "esbuild@0.28.2": true
+  }
+}

@@ -1,0 +1,208 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import constants from '../data/constants.json';
+
+const c = constants as unknown as Record<string, number>;
+
+// Curva de EHP por DEF, assumindo mitigacao = DEF/(DEF+DEF_K).
+const defCurve = [0, 30, 60, 120, 180, 240].map((def) => ({
+  def,
+  mitigacao: (def / (def + c.DEF_K)) * 100,
+  ehp: (def + c.DEF_K) / c.DEF_K,
+}));
+
+const parryCurve = [3, 15, 25, 35, 45, 55].map((p) => ({ p, ehp: 1 / (1 - p / 100) }));
+---
+
+<BaseLayout
+  title="Atributos & pontos"
+  banner="Atributos"
+  description="Onde investir os 5 pontos por nível em Lootborne: o que cada atributo faz, onde estão os tetos e o que os próprios testes do desenvolvedor indicam."
+>
+  <header class="mb-8 max-w-3xl">
+    <h1 class="font-display text-3xl md:text-4xl font-semibold mb-3">Onde colocar seus pontos</h1>
+    <p class="text-text-soft">
+      Cada nível dá pontos pra distribuir entre <strong class="text-text-main">HP, ATK, DEF, CRIT e
+      PARRY</strong>. O jogo guarda isso em campos separados (<code>allocatedHp</code>,{' '}
+      <code>allocatedAtk</code>…) e tem respec pago — então erro não é permanente. O que está abaixo
+      é a lógica de cada atributo derivada das constantes reais de combate.
+    </p>
+  </header>
+
+  <div class="panel p-4 border-gold/40 mb-10 max-w-3xl">
+    <p class="text-sm text-text-soft">
+      <strong class="text-gold">O que eu não consigo te dar:</strong> quanto <em>exatamente</em> cada
+      ponto rende (os campos <code>AtkPerPoint</code>, <code>HpPerPoint</code>, etc. existem no jogo mas
+      são preenchidos em tempo de execução, não ficam nos arquivos). Esse número você lê na tela de
+      atributos do jogo — me manda e eu fixo aqui. A boa notícia é que a decisão abaixo depende muito
+      mais dos <strong class="text-text-main">tetos e do formato das curvas</strong> do que do valor por ponto.
+    </p>
+  </div>
+
+  <section class="mb-12">
+    <h2 class="font-display text-2xl font-semibold mb-4">A regra que mais importa: os tetos</h2>
+    <div class="grid sm:grid-cols-2 gap-4 mb-4">
+      <div class="panel p-5">
+        <div class="text-3xl font-display text-mythic mb-1">{c.CRIT_CAP}%</div>
+        <div class="font-semibold mb-1">Teto de CRIT</div>
+        <p class="text-text-soft text-sm">
+          Passou disso, <strong class="text-text-main">ponto jogado fora</strong>. O perk{' '}
+          <strong class="text-text-main">Ápice Crítico</strong> eleva o teto para{' '}
+          <strong class="text-text-main">65%</strong> — e é só isso, então mesmo com ele o ganho
+          extra é de 5 pontos percentuais.
+        </p>
+      </div>
+      <div class="panel p-5">
+        <div class="text-3xl font-display text-rare mb-1">{c.PARRY_CAP}%</div>
+        <div class="font-semibold mb-1">Teto de PARRY</div>
+        <p class="text-text-soft text-sm">
+          Mesma coisa: acima de {c.PARRY_CAP}% não rende nada. Lembre que itens também dão PARRY —
+          conte o total, não só o alocado.
+        </p>
+      </div>
+    </div>
+    <p class="text-text-soft text-sm max-w-3xl">
+      HP, ATK e DEF <strong class="text-text-main">não têm teto</strong>. Isso por si só já muda a
+      estratégia de fim de jogo: CRIT e PARRY são investimentos que "enchem" e param; os outros três
+      absorvem pontos pra sempre.
+    </p>
+  </section>
+
+  <section class="mb-12">
+    <h2 class="font-display text-2xl font-semibold mb-2">CRIT: linear e fácil de calcular</h2>
+    <p class="text-text-soft max-w-3xl mb-4">
+      Crítico multiplica o dano por <code>{c.CRIT_MULTIPLIER}×</code>. Como o multiplicador é
+      exatamente 2, cada <strong class="text-text-main">+1% de CRIT = +1% de dano médio</strong>. Você
+      começa com {c.BASE_CRIT}% base, então ir de {c.BASE_CRIT}% até o teto de {c.CRIT_CAP}% vale{' '}
+      <strong class="text-text-main">+{c.CRIT_CAP - c.BASE_CRIT}% de dano</strong> — e nada além disso.
+    </p>
+  </section>
+
+  <section class="mb-12">
+    <h2 class="font-display text-2xl font-semibold mb-2">DEF: a pegadinha boa</h2>
+    <p class="text-text-soft max-w-3xl mb-4">
+      Aqui mora o erro mais comum. Olhando a <em>porcentagem de dano reduzido</em>, DEF parece ter
+      retorno decrescente e "travar". Mas o que te mantém vivo não é a porcentagem, é o
+      <strong class="text-text-main">HP efetivo</strong> — e nessa métrica DEF cresce de forma{' '}
+      <strong class="text-text-main">linear, sem nunca saturar</strong>:
+    </p>
+    <div class="panel overflow-x-auto mb-4">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>DEF</th>
+            <th>Dano reduzido</th>
+            <th>HP efetivo</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            defCurve.map((r) => (
+              <tr>
+                <td>{r.def}</td>
+                <td class="text-text-soft">{r.mitigacao.toFixed(1)}%</td>
+                <td class="text-gold-bright font-semibold">{r.ehp.toFixed(2)}×</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+    <p class="text-text-soft text-sm max-w-3xl">
+      Repare: de 0 a 60 de DEF a redução vai de 0% a 50% (parece muito); de 180 a 240 ela vai de 75% a
+      80% (parece pouco). Só que o HP efetivo subiu 1,00× no primeiro caso e 1,00× no segundo — o
+      <strong class="text-text-main">mesmo ganho</strong>. Cada {c.DEF_K} de DEF sempre adiciona 1× do
+      seu HP base em sobrevivência.
+    </p>
+    <div class="panel p-4 border-ascended/50 mt-4 max-w-3xl">
+      <p class="text-sm text-ascended font-semibold mb-1">Essa tabela é fato, não estimativa</p>
+      <p class="text-text-soft text-sm">
+        A constante <code class="text-amber">DEF_K = {c.DEF_K}</code> foi extraída do jogo, e o
+        manual do próprio Lootborne confirma a fórmula{' '}
+        <code class="text-amber">redução = DEF / (DEF + DEF_K)</code> ponto a ponto:
+        <em>"30 de DEF reduz o dano em um terço, 60 pela metade, 120 em dois terços"</em>. Bate
+        exatamente com a coluna de mitigação acima, então a conclusão de que o HP efetivo cresce
+        linearmente se sustenta.
+      </p>
+    </div>
+  </section>
+
+  <section class="mb-12">
+    <h2 class="font-display text-2xl font-semibold mb-2">PARRY: cresce cada vez mais até bater no teto</h2>
+    <p class="text-text-soft max-w-3xl mb-4">
+      Se parry anula o golpe, o ganho é <code>1 / (1 − parry)</code> — ou seja, quanto mais parry você
+      tem, mais cada ponto novo vale. O teto de {c.PARRY_CAP}% existe justamente porque a curva
+      explodiria:
+    </p>
+    <div class="panel overflow-x-auto mb-4">
+      <table class="data-table">
+        <thead>
+          <tr><th>PARRY</th><th>HP efetivo</th><th>Ganho do último passo</th></tr>
+        </thead>
+        <tbody>
+          {
+            parryCurve.map((r, i) => (
+              <tr>
+                <td>{r.p}%</td>
+                <td class="text-gold-bright font-semibold">{r.ehp.toFixed(2)}×</td>
+                <td class="text-text-soft">
+                  {i === 0 ? '—' : `+${((r.ehp / parryCurve[i - 1].ehp - 1) * 100).toFixed(0)}%`}
+                </td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+    <p class="text-text-soft text-sm max-w-3xl">
+      Existe também o perk <strong class="text-text-main">Guarda Inata</strong>: "se seu BLOQUEIO
+      estiver abaixo de 15%, ele é elevado a 15%". Se você não pretende investir em BLOQUEIO, esse
+      perk entrega o começo da curva de graça. E a{' '}
+      <strong class="text-text-main">Guarda Instintiva</strong> converte BLOQUEIO em DEF — "+0,5% de DEF para cada ponto de BLOQUEIO, até +27,5%" —, o que faz
+      os dois atributos se reforçarem. Os dois textos são os oficiais do jogo.
+    </p>
+  </section>
+
+  <section class="mb-12">
+    <h2 class="font-display text-2xl font-semibold mb-2">O que os testes do próprio dev dizem</h2>
+    <div class="panel p-5 max-w-3xl">
+      <p class="text-text-soft text-sm mb-3">
+        O jogo carrega um harness de QA interno com asserções em italiano. Uma delas é literalmente:
+      </p>
+      <blockquote class="border-l-2 border-gold pl-3 text-sm text-text-main italic mb-3">
+        "H3. la DEF deve restare la stat piu' allocata, com'e' in tutti e sei i trace"
+      </blockquote>
+      <p class="text-text-soft text-sm">
+        Tradução: <em>"a DEF deve continuar sendo o atributo mais alocado, como é em todos os seis
+        traces"</em>. Ou seja: nas seis simulações de referência que o estúdio usa pra validar
+        balanceamento, <strong class="text-text-main">DEF é o atributo que mais recebe pontos</strong>.
+        Isso não é conselho oficial pro jogador, é um teste interno — mas casa exatamente com a
+        matemática da seção de DEF acima.
+      </p>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="font-display text-2xl font-semibold mb-3">Resumo prático</h2>
+    <div class="grid md:grid-cols-2 gap-4">
+      <div class="panel p-5">
+        <h3 class="font-semibold text-lg mb-2 text-gold-bright">Faça</h3>
+        <ul class="text-text-soft text-sm space-y-1.5 list-disc list-inside">
+          <li>Trate CRIT e PARRY como <strong class="text-text-main">metas</strong>: leve até o teto contando o que os itens já dão, e pare</li>
+          <li>Despeje o excedente em DEF — é o único defensivo que nunca satura</li>
+          <li>Recalcule o total (alocado + itens) toda vez que trocar de equipamento, pra não passar do teto sem perceber</li>
+          <li>Use o respec quando mudar de estratégia; ele existe e custa moeda, não é definitivo</li>
+        </ul>
+      </div>
+      <div class="panel p-5">
+        <h3 class="font-semibold text-lg mb-2 text-mythic">Evite</h3>
+        <ul class="text-text-soft text-sm space-y-1.5 list-disc list-inside">
+          <li>Passar de {c.CRIT_CAP}% de CRIT sem ter o perk Critical Apex — é ponto perdido</li>
+          <li>Passar de {c.PARRY_CAP}% de PARRY em qualquer situação</li>
+          <li>Julgar DEF pela porcentagem de redução — ela engana, olhe o HP efetivo</li>
+          <li>Ignorar que o Power Score do jogo pesa ATK {(c.PS_ATK_WEIGHT / c.PS_HP_WEIGHT).toFixed(0)}× mais que HP: um número alto de PS não significa que você sobrevive mais</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

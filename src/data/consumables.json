@@ -1,0 +1,182 @@
+{
+  "_nota": "Nome e efeito vem de Resources/localization/pt-BR.json (consumable.N.name / .effect). A numeracao da localizacao pula alguns numeros e nao cobre todos os icones existentes — as pocoes sem entrada ficam de fora porque nao da pra saber o efeito sem inventar.",
+  "categorias": [
+    "Combat",
+    "Convenience",
+    "Pacing",
+    "Loot",
+    "Economy"
+  ],
+  "slotsNota": "1 slot ativo no início; o 2º slot libera ao limpar o setor 3. A loja de consumíveis libera ao limpar o setor 1. (GameConstants — fato)",
+  "consumables": [
+    {
+      "id": 1,
+      "name": "Bastião",
+      "nameEn": "Bastion",
+      "icon": "Bastion.png",
+      "effect": "Você sofre -20% de dano"
+    },
+    {
+      "id": 2,
+      "name": "Fúria",
+      "nameEn": "Fury",
+      "icon": "Fury.png",
+      "effect": "Você ganha +25% de ATK"
+    },
+    {
+      "id": 3,
+      "name": "Muralha",
+      "nameEn": "Rampart",
+      "icon": "Rampant.png",
+      "effect": "Você ganha +30% de DEF"
+    },
+    {
+      "id": 4,
+      "name": "Vitalidade",
+      "nameEn": "Vigor",
+      "icon": "Vigor.png",
+      "effect": "Você ganha +20% de PV máximo"
+    },
+    {
+      "id": 5,
+      "name": "Selvageria",
+      "nameEn": "Savagery",
+      "icon": "Savagery.png",
+      "effect": "Você ganha +20% de CRIT"
+    },
+    {
+      "id": 6,
+      "name": "Reflexos Felinos",
+      "nameEn": "Feline Reflexes",
+      "icon": "Feline_reflexes.png",
+      "effect": "Você ganha +16% de BLOQUEIO"
+    },
+    {
+      "id": 7,
+      "name": "Regeneração",
+      "nameEn": "Regeneration",
+      "icon": "Regeneration.png",
+      "effect": "Recupera 18% do PV máximo após cada combate"
+    },
+    {
+      "id": 8,
+      "name": "Sede de Sangue",
+      "nameEn": "Bloodthirst",
+      "icon": "Bloodthirst.png",
+      "effect": "Seus ataques ganham +5% de roubo de vida"
+    },
+    {
+      "id": 10,
+      "name": "Quebra-Armadura",
+      "nameEn": "Armor Breaker",
+      "icon": "Armor_breaker.png",
+      "effect": "Ignora 30% da DEF inimiga"
+    },
+    {
+      "id": 11,
+      "name": "Incansável",
+      "nameEn": "Tireless",
+      "icon": "Tireless.png",
+      "effect": "Nenhum consumo de Vigor"
+    },
+    {
+      "id": 13,
+      "name": "Desgaste",
+      "nameEn": "Attrition",
+      "icon": "Attrition.png",
+      "effect": "Os inimigos têm -15% de PV"
+    },
+    {
+      "id": 14,
+      "name": "Sorte do Buscador",
+      "nameEn": "Seeker's Luck",
+      "icon": "Seeker_luck.png",
+      "effect": "+8% de chance de drop"
+    },
+    {
+      "id": 15,
+      "name": "Sabedoria",
+      "nameEn": "Wisdom",
+      "icon": "Wisdom.png",
+      "effect": "Você ganha +20% de XP"
+    },
+    {
+      "id": 16,
+      "name": "Olho do Colecionador",
+      "nameEn": "Collector's Eye",
+      "icon": "Collector_eye.png",
+      "effect": "25% de chance de elevar a raridade de um drop em um nível"
+    },
+    {
+      "id": 19,
+      "name": "Carga Pesada",
+      "nameEn": "Heavy Haul",
+      "icon": "Heavy_haul.png",
+      "effect": "+10% de chance de drop"
+    },
+    {
+      "id": 25,
+      "name": "Óleo Corrosivo",
+      "nameEn": "Sunder Oil",
+      "icon": "Sunder_oil.png",
+      "effect": "A cada dois golpes, reduz a DEF inimiga em 4 (cumulativo, por combate)"
+    },
+    {
+      "id": 26,
+      "name": "Poção do Carrasco",
+      "nameEn": "Executioner's Draught",
+      "icon": "Executioner_draught.png",
+      "effect": "+40% de dano a inimigos abaixo de 50% de PV"
+    },
+    {
+      "id": 27,
+      "name": "Imolação",
+      "nameEn": "Immolation",
+      "icon": "Immolation.png",
+      "effect": "O inimigo queima por 1% do PV máximo dele a cada vez que você ataca"
+    },
+    {
+      "id": 28,
+      "name": "Perfurador",
+      "nameEn": "Piercer",
+      "icon": null,
+      "effect": "Seus ataques ignoram as resistências elementais do inimigo"
+    },
+    {
+      "id": 29,
+      "name": "Elixir",
+      "nameEn": "Elixir",
+      "icon": null,
+      "effect": "Restaura instantaneamente 30% do seu PV máximo"
+    },
+    {
+      "id": 30,
+      "name": "Elixir Maior",
+      "nameEn": "Greater Elixir",
+      "icon": null,
+      "effect": "Restaura instantaneamente 50% do seu PV máximo"
+    }
+  ],
+  "semLocalizacao": [
+    {
+      "icon": "Arcanist.png",
+      "nome": "Arcanist"
+    },
+    {
+      "icon": "Flame_barrier.png",
+      "nome": "Flame barrier"
+    },
+    {
+      "icon": "Frost_barrier.png",
+      "nome": "Frost barrier"
+    },
+    {
+      "icon": "Holy_barrier.png",
+      "nome": "Holy barrier"
+    },
+    {
+      "icon": "Shadow_barrier.png",
+      "nome": "Shadow barrier"
+    }
+  ]
+}
