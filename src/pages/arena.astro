@@ -1,0 +1,228 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import constants from '../data/constants.json';
+import { withBase } from '../lib/base';
+import { rarityLabel, rarityColor } from '../lib/labels';
+
+const c = constants as unknown as Record<string, number>;
+
+// Faixas de loot da Arena. Os limites vêm das asserções de teste do dev
+// (G1–G4) e o teto de raridade de cada faixa de G6/G7.
+const bandas = [
+  { faixa: '1 – 10', banda: 0, teto: 'Legendary', ascendente: 0 },
+  { faixa: '11 – 20', banda: 1, teto: 'Mythic', ascendente: 2 },
+  { faixa: '21 – 30', banda: 2, teto: 'Mythic', ascendente: 10 },
+  { faixa: '31 +', banda: 3, teto: 'Mythic', ascendente: 20 },
+];
+---
+
+<BaseLayout
+  title="Arena"
+  banner="Arena"
+  description="Como a Arena de Lootborne funciona: ondas, chefes, faixas de loot e a única fonte de itens Ascendentes."
+>
+  <header class="mb-5">
+    <h1 class="page-title mb-2">Arena</h1>
+    <p class="text-text-soft max-w-3xl text-sm leading-relaxed">
+      A Arena é o modo infinito, e não é conteúdo opcional: ela destrava a forja de Mítico e é de
+      onde saem os itens <strong class="text-text-main">Ascendentes</strong>, a raridade mais alta do
+      jogo. Boa parte do que está aqui não aparece em constante nenhuma — veio das asserções dos
+      testes internos do desenvolvedor, que estão explicadas{' '}
+      <a href="#procedencia" class="text-gold hover:underline">no fim da página</a>.
+    </p>
+  </header>
+
+  <section class="mb-8">
+    <div class="banner mb-4"><span>A estrutura de uma onda</span></div>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+      <div class="stat-box">
+        <dt>{c.ARENA_ENEMIES_PER_WAVE}</dt>
+        <dd>inimigos por onda</dd>
+      </div>
+      <div class="stat-box">
+        <dt>{c.ARENA_BOSS_EVERY_WAVES}</dt>
+        <dd>ondas entre chefes</dd>
+      </div>
+      <div class="stat-box">
+        <dt>{c.ARENA_BOSS_HP_FACTOR}×</dt>
+        <dd>PV do chefe</dd>
+      </div>
+      <div class="stat-box">
+        <dt>{c.ARENA_BOSS_ATK_FACTOR}×</dt>
+        <dd>ATK do chefe</dd>
+      </div>
+    </div>
+    <div class="panel p-4">
+      <p class="text-sm text-text-soft leading-relaxed">
+        Cada onda tem {c.ARENA_ENEMIES_PER_WAVE} inimigos. Nas ondas múltiplas de{' '}
+        {c.ARENA_BOSS_EVERY_WAVES} a onda <strong class="text-text-main">não fecha</strong> depois do
+        décimo: o 11º confronto é o chefe. Ou seja, numa corrida até a onda 60 você enfrenta
+        exatamente 6 chefes — ondas 10, 20, 30, 40, 50 e 60.
+      </p>
+      <p class="text-sm text-text-soft leading-relaxed mt-2">
+        <strong class="text-gold">Antes do chefe você volta a PV cheio.</strong> Isso muda o
+        planejamento: chegar arranhado na onda do chefe não é problema, mas chegar arranhado na onda
+        seguinte é — o regen entre ondas é de apenas{' '}
+        {(c.ARENA_REGEN_BASELINE_PCT * 100).toFixed(0)}% do PV máximo (
+        {(c.ARENA_REGEN_EARLY_PCT * 100).toFixed(0)}% nas primeiras{' '}
+        {c.ARENA_REGEN_STEP_WAVE} ondas).
+      </p>
+      <p class="text-sm text-text-soft leading-relaxed mt-2">
+        O chefe é <strong class="text-text-main">determinístico</strong>: depende só da onda e do
+        índice do abate, então sair e voltar traz o mesmo chefe. E chefe já derrotado{' '}
+        <strong class="text-text-main">não reaparece</strong> se você morrer e voltar àquela onda.
+      </p>
+    </div>
+  </section>
+
+  <section class="mb-8">
+    <div class="banner mb-4"><span>Quem aparece: a rampa de setores</span></div>
+    <div class="panel p-4">
+      <p class="text-sm text-text-soft leading-relaxed">
+        O elenco da Arena sai <strong class="text-text-main">só dos setores 4, 5 e 6</strong> — os
+        três mais difíceis. A mistura caminha de forma monótona (nunca regride):
+      </p>
+      <ul class="text-sm text-text-soft mt-2 space-y-1 list-disc list-inside">
+        <li>Na <strong class="text-text-main">onda 1</strong>, 100% Acampamento de Guerra (setor 4)</li>
+        <li>Da <strong class="text-text-main">onda 50</strong> em diante, 100% Abissombrio (setor 6)</li>
+        <li>Entre as duas, a proporção desliza de um para o outro</li>
+      </ul>
+      <p class="text-sm text-text-soft leading-relaxed mt-2">
+        Na prática isso define seu elemento: veja as resistências de setor 4 a 6 na{' '}
+        <a href={withBase('/guia')} class="text-gold hover:underline">página de guia</a> e monte a
+        arma pensando em onde você costuma parar.
+      </p>
+    </div>
+  </section>
+
+  <section class="mb-8">
+    <div class="banner mb-4"><span>Faixas de loot</span></div>
+    <p class="text-text-soft text-sm mb-3 max-w-3xl">
+      O loot da Arena é agrupado em quatro faixas por onda. A faixa muda{' '}
+      <strong class="text-text-main">logo depois da onda do chefe</strong>.
+    </p>
+    <div class="panel overflow-x-auto">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Ondas</th>
+            <th>Faixa</th>
+            <th>Teto de raridade</th>
+            <th>Peso de Ascendente</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            bandas.map((b) => (
+              <tr>
+                <td class="font-medium tabular-nums">{b.faixa}</td>
+                <td class="text-text-muted tabular-nums">{b.banda}</td>
+                <td style={{ color: rarityColor(b.teto) }}>{rarityLabel(b.teto)}</td>
+                <td class="tabular-nums">{b.ascendente === 0 ? '—' : b.ascendente}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+    <p class="text-text-soft text-sm mt-3 max-w-3xl">
+      Repare no degrau: até a onda 10 o teto é <span style={{ color: rarityColor('Legendary') }}>Lendário</span> —
+      Mítico tem 0% na tabela. A partir da onda 11 o Mítico entra. É mais um motivo pra não ficar
+      repetindo corridas curtas.
+    </p>
+  </section>
+
+  <section class="mb-8">
+    <div class="banner mb-4"><span>Ascendente: a parte que ninguém conta</span></div>
+    <div class="panel p-4 border-gold">
+      <p class="text-sm text-text-soft leading-relaxed">
+        <strong class="text-gold">O Ascendente não cai numa onda nova.</strong> Ele só é sorteado
+        quando você <strong class="text-text-main">re-completa uma onda que já tinha fechado
+        antes</strong> — numa onda inédita o bilhete vale zero. É o oposto da intuição: avançar
+        recorde não dá Ascendente; voltar e refazer o trecho já conquistado, sim.
+      </p>
+      <ul class="text-sm text-text-soft mt-3 space-y-1.5 list-disc list-inside">
+        <li>Abaixo da <strong class="text-text-main">onda 16</strong> o bilhete vale zero, sempre</li>
+        <li>
+          O peso da faixa é multiplicado por{' '}
+          <code class="text-amber">{c.ARENA_RECLEAR_ASCENDED_FACTOR}</code> e tem teto de{' '}
+          <code class="text-amber">{c.ARENA_RECLEAR_ASCENDED_CAP_PCT}%</code> por sorteio
+        </li>
+        <li>
+          Ascendente só fica equipável no nível{' '}
+          <strong class="text-text-main">{c.RARITY_UNLOCK_ASCENDED}</strong>
+        </li>
+      </ul>
+      <p class="text-xs text-text-muted mt-3">
+        Os números acima são constantes reais do jogo e as regras vêm das asserções de teste. O que
+        eu <em>não</em> consegui fechar é a conta exata: aplicando peso × fator, o teto de{' '}
+        {c.ARENA_RECLEAR_ASCENDED_CAP_PCT}% passaria a valer já na faixa 21–30, mas uma das
+        asserções fala do teto mordendo a partir da onda 40. Falta uma peça — trate as porcentagens
+        como ordem de grandeza, não como número fechado.
+      </p>
+    </div>
+  </section>
+
+  <section class="mb-8">
+    <div class="banner mb-4"><span>Recompensa de chefe</span></div>
+    <div class="panel p-4">
+      <ul class="text-sm text-text-soft space-y-1.5 list-disc list-inside">
+        <li>Todo chefe de onda entrega um item</li>
+        <li>
+          Se você{' '}
+          <strong class="text-text-main">nunca derrotou aquele chefe na campanha</strong>, a
+          Arena te paga também o item exclusivo dele — é um sistema de recuperação
+        </li>
+        <li>Item único de chefe <strong class="text-text-main">não vem duplicado</strong></li>
+        <li>Rebater um chefe já marcado <strong class="text-text-main">não paga de novo</strong></li>
+        <li>
+          O chefe de Arena <strong class="text-text-main">não é um chefe de PvP</strong>: são coisas
+          diferentes, e os 4 itens de chefe de PvP saem por outro caminho
+        </li>
+      </ul>
+      <p class="text-sm text-text-soft mt-3">
+        Marco de onda (<code class="text-amber">ARENA_MILESTONE_ONCE_PER_WAVE</code>) segue a mesma
+        lógica: paga no <strong class="text-text-main">primeiro</strong> fechamento daquela onda.
+        Refazer depois de morrer não paga de novo.
+      </p>
+    </div>
+  </section>
+
+  <section class="mb-8">
+    <div class="banner mb-4"><span>Por que a Arena destrava a forja</span></div>
+    <div class="panel p-4">
+      <p class="text-sm text-text-soft leading-relaxed">
+        A linha de Mítico da forja fica fechada enquanto você não tiver recorde de onda{' '}
+        <strong class="text-text-main">{c.FORGE_MYTHIC_MIN_WAVE_RECORD}</strong> na Arena. Sem
+        Arena, ela simplesmente não existe.
+      </p>
+      <p class="text-sm text-text-soft leading-relaxed mt-2">
+        <strong class="text-gold">Cuidado antes de forjar pra vender:</strong> item saído da forja
+        carrega a marca da origem, e a regra que os testes citam é{' '}
+        <strong class="text-text-main">"Lendário forjado = preso à conta"</strong>. Ou seja, forjar
+        um Lendário provavelmente o torna não-negociável no Mercado da Comunidade. Se a ideia era
+        vender, forjar pode queimar o item.
+      </p>
+    </div>
+  </section>
+
+  <section id="procedencia">
+    <div class="banner mb-4"><span>De onde saiu tudo isso</span></div>
+    <div class="panel p-4 max-w-3xl">
+      <p class="text-sm text-text-soft leading-relaxed">
+        O Lootborne carrega, dentro do executável, o texto das{' '}
+        <strong class="text-text-main">asserções de teste automatizado</strong> do próprio
+        desenvolvedor — frases em italiano do tipo <em>"o chefe deve sair exatamente nas ondas
+        múltiplas de 10"</em> ou <em>"as ondas 11 e 20 devem estar na faixa 1"</em>. São as
+        verificações que o estúdio roda pra garantir que o jogo se comporta como projetado.
+      </p>
+      <p class="text-sm text-text-soft leading-relaxed mt-2">
+        Isso as torna uma fonte forte: não é dedução minha, é o time declarando qual é o
+        comportamento correto. Ainda assim é um degrau abaixo de uma constante — a asserção diz o
+        que <em>deve</em> acontecer, e eu não consigo ver o código que a satisfaz. Onde uma
+        constante confirma a asserção (chefe a cada 10 ondas, 10 inimigos por onda, fatores do
+        chefe), os dois batem.
+      </p>
+    </div>
+  </section>
+</BaseLayout>

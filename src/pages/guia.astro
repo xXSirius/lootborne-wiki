@@ -92,10 +92,12 @@ const secondsPerBattle = c.STAMINA_COST_PER_BATTLE / c.STAMINA_REGEN_PER_SEC;
       <div class="panel p-5 border-mythic/30">
         <h3 class="font-semibold mb-1.5">4. Deixar o jogo aberto 24h</h3>
         <p class="text-text-soft text-sm">
-          O Second Wind acumula <strong class="text-text-main">enquanto você está fora</strong> —{' '}
-          {c.SECOND_WIND_ACCRUAL_PER_OFFLINE_HOUR} por hora offline, até {c.SECOND_WIND_MAX_HOURS}h. Ele
-          vale {c.SECOND_WIND_XP_MULTIPLIER}× XP, moeda e chance de drop. Fechar o jogo por um período e
-          voltar rende mais que deixar rodando direto.
+          O Segundo Fôlego enche <strong class="text-text-main">enquanto você está fora</strong> —{' '}
+          {c.SECOND_WIND_ACCRUAL_PER_OFFLINE_HOUR}h de bônus por hora offline, até{' '}
+          {c.SECOND_WIND_MAX_HOURS}h de saldo — e vale {c.SECOND_WIND_XP_MULTIPLIER}× XP, moeda e
+          chance de drop. Só que ele <strong class="text-text-main">queima em tempo real</strong>{' '}
+          assim que você abre o jogo: deixar aberto sem lutar torra o bônus à toa. Volte, gaste a
+          stamina, e feche.
         </p>
       </div>
     </div>

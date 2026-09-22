@@ -57,18 +57,52 @@ const c = constants as Record<string, number | string | boolean>;
   <section class="mb-12">
     <h2 class="section-title text-gold-bright mb-3">Second Wind — progresso offline</h2>
     <p class="text-text-soft max-w-3xl mb-4">
-      Fechar o jogo não é tempo perdido. Existe um sistema de "segundo fôlego" que acumula um bônus
-      pra quando você volta:
+      Fechar o jogo não é tempo perdido: enquanto você está fora, o jogo enche um{' '}
+      <strong class="text-text-main">saldo de horas bonificadas</strong> que você gasta depois,
+      jogando. Não é progresso offline — é um multiplicador guardado.
     </p>
     <ul class="text-text-soft space-y-1.5 max-w-2xl list-disc list-inside">
-      <li>Acumula <code>{c.SECOND_WIND_ACCRUAL_PER_OFFLINE_HOUR}</code> por hora offline, até um teto de <code>{c.SECOND_WIND_MAX_HOURS}h</code></li>
-      <li>Quando ativo: <code>{c.SECOND_WIND_XP_MULTIPLIER}×</code> XP, <code>{c.SECOND_WIND_BLOODMARK_MULTIPLIER}×</code> moeda (Bloodmark), <code>{c.SECOND_WIND_DROP_CHANCE_MULTIPLIER}×</code> chance de drop (<code>{c.SECOND_WIND_DROP_CHANCE_MULTIPLIER_ARENA}×</code> na Arena)</li>
-      <li>Exige relógio do servidor pra validar (anti-cheat de "adiantar o relógio"): espera <code>{c.SECOND_WIND_CLOCK_WAIT_SECONDS}s</code> pra confirmar, com fallback de até <code>{c.SECOND_WIND_OFFLINE_FALLBACK_MAX_HOURS}h</code> se o servidor não responder</li>
+      <li>
+        <strong class="text-text-main">Enche</strong> a{' '}
+        <code>{c.SECOND_WIND_ACCRUAL_PER_OFFLINE_HOUR}h</code> de bônus por hora offline, até um teto
+        de <code>{c.SECOND_WIND_MAX_HOURS}h</code>. O saldo é guardado em décimos de hora
+        (<code>secondWindTenths</code>), ou seja, em blocos de 6 minutos
+      </li>
+      <li>
+        <strong class="text-text-main">Gasta</strong> em tempo real enquanto você joga — o HUD mostra
+        uma contagem regressiva ("Segundo Fôlego {'{0}'}h")
+      </li>
+      <li>
+        <strong class="text-text-main">Vale</strong> <code>{c.SECOND_WIND_XP_MULTIPLIER}×</code> XP,{' '}
+        <code>{c.SECOND_WIND_BLOODMARK_MULTIPLIER}×</code> Bloodmark e{' '}
+        <code>{c.SECOND_WIND_DROP_CHANCE_MULTIPLIER}×</code> chance de drop
+        (<code>{c.SECOND_WIND_DROP_CHANCE_MULTIPLIER_ARENA}×</code> na Arena). O tooltip do jogo
+        mostra isso como "+50% XP / +50% Chance de drop / +50% Escalpos"
+      </li>
+      <li>
+        <strong class="text-text-main">É validado pelo servidor</strong> (anti-cheat de adiantar o
+        relógio): espera <code>{c.SECOND_WIND_CLOCK_WAIT_SECONDS}s</code> pela resposta, cai pra no
+        máximo <code>{c.SECOND_WIND_OFFLINE_FALLBACK_MAX_HOURS}h</code> se o servidor não responder,
+        e marca salto de relógio a partir de <code>{c.SECOND_WIND_CLOCK_JUMP_FLAG_MINUTES}min</code>
+      </li>
     </ul>
-    <p class="text-text-soft mt-3 max-w-2xl text-sm">
-      Na prática: vale a pena fechar o jogo por algumas horas em vez de deixar rodando pra sempre —
-      o bônus satura em {c.SECOND_WIND_MAX_HOURS}h offline.
-    </p>
+    <div class="panel p-4 border-gold mt-4 max-w-3xl">
+      <p class="text-sm text-gold font-semibold mb-1">Interpretação — onde o teto de 8h se aplica</p>
+      <p class="text-text-soft text-sm">
+        A constante se chama <code class="text-amber">SECOND_WIND_MAX_HOURS</code>, sem "OFFLINE" no
+        nome — diferente da vizinha <code class="text-amber">SECOND_WIND_OFFLINE_FALLBACK_MAX_HOURS</code>,
+        que é explícita. E o registro interno de QA guarda <code>offlineHours</code>,{' '}
+        <code>grantedHours</code> e <code>hoursAfter</code> como campos separados. Isso indica que as
+        8h limitam o <strong class="text-text-main">saldo acumulado</strong>, não as horas offline
+        contadas.
+      </p>
+      <p class="text-text-soft text-sm mt-2">
+        Se for isso, encher a barra do zero leva <strong class="text-text-main">~16h fora</strong>{' '}
+        (16 × 0,5), e não 8h. Não dá pra confirmar no código porque o corpo dos métodos não
+        decompila — dá pra medir no jogo: anote o valor do HUD, fique fora um tempo conhecido e veja
+        quanto subiu.
+      </p>
+    </div>
   </section>
 
   <section class="mb-12">
