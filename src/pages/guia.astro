@@ -41,7 +41,6 @@ const desmontePorRaridade = ORDEM_RARIDADE.map(
 ).filter(([, valor]) => valor !== undefined);
 
 const staminaBurst = Math.floor(c.STAMINA_MAX / c.STAMINA_COST_PER_BATTLE);
-const secondsPerBattle = c.STAMINA_COST_PER_BATTLE / c.STAMINA_REGEN_PER_SEC;
 ---
 
 <BaseLayout
@@ -187,43 +186,57 @@ const secondsPerBattle = c.STAMINA_COST_PER_BATTLE / c.STAMINA_REGEN_PER_SEC;
 
   <section class="mb-12">
     <h2 class="section-title text-gold-bright mb-2">A rotina que rende mais</h2>
-    <div class="grid md:grid-cols-3 gap-4 mb-4">
-      <div class="panel p-5">
-        <div class="text-2xl font-display text-gold-bright mb-1">{staminaBurst}</div>
-        <div class="text-sm text-text-soft">
-          batalhas seguidas com stamina cheia ({c.STAMINA_MAX} ÷ {c.STAMINA_COST_PER_BATTLE} por batalha)
-        </div>
+    <div class="panel p-4 border-gold mb-4 max-w-3xl">
+      <p class="text-sm text-text-soft leading-relaxed">
+        <strong class="text-gold">Primeiro, desfaça uma ideia errada:</strong> stamina não é o seu
+        gargalo. Uma batalha custa {c.STAMINA_COST_PER_BATTLE} e a barra vai até {c.STAMINA_MAX} —
+        são <strong class="text-text-main">{staminaBurst} batalhas</strong> com a barra cheia, e ela
+        enche de novo em <strong class="text-text-main">{(c.STAMINA_MAX / c.STAMINA_REGEN_PER_SEC / 60).toFixed(0)} minutos</strong>.
+        Você não consegue gastar isso lutando. O recurso escasso é outro: o
+        <strong class="text-text-main"> Segundo Fôlego</strong>.
+      </p>
+    </div>
+
+    <div class="grid sm:grid-cols-3 gap-3 mb-4">
+      <div class="stat-box">
+        <dt>30 min</dt>
+        <dd>de bônus por hora fora</dd>
       </div>
-      <div class="panel p-5">
-        <div class="text-2xl font-display text-gold-bright mb-1">{secondsPerBattle.toFixed(1)}s</div>
-        <div class="text-sm text-text-soft">
-          por batalha no ritmo sustentado (só a regeneração de stamina)
-        </div>
+      <div class="stat-box">
+        <dt>16 h</dt>
+        <dd>fora enchem o teto de {c.SECOND_WIND_MAX_HOURS}h</dd>
       </div>
-      <div class="panel p-5">
-        <div class="text-2xl font-display text-gold-bright mb-1">{c.PITY_DROP_THRESHOLD}</div>
-        <div class="text-sm text-text-soft">
-          batalhas sem drop até o sistema de pity aumentar sua chance
-        </div>
+      <div class="stat-box">
+        <dt>{c.PITY_DROP_THRESHOLD}</dt>
+        <dd>batalhas sem drop até o pity</dd>
       </div>
     </div>
-    <ol class="text-text-soft space-y-2 max-w-3xl list-decimal list-inside text-sm">
+
+    <ol class="text-text-soft space-y-2.5 max-w-3xl list-decimal list-inside text-sm">
       <li>
-        <strong class="text-text-main">Entre com o Second Wind ativo.</strong> Se você ficou offline
-        algumas horas, é nesse período que o XP e os drops valem {c.SECOND_WIND_XP_MULTIPLIER}×. Gaste
-        a janela no setor mais alto que você aguenta.
+        <strong class="text-text-main">Só abra o jogo quando for jogar de verdade.</strong> O
+        Segundo Fôlego queima em tempo real: com o jogo aberto e você longe do teclado, o bônus
+        escorre igual. Essa é a diferença entre render e desperdiçar.
       </li>
       <li>
-        <strong class="text-text-main">Queime a stamina cheia no setor mais difícil possível.</strong>{' '}
-        Setor mais alto = tabela de drop melhor (veja <a href={withBase('/setores')} class="text-gold-bright hover:underline">Setores</a>).
+        <strong class="text-text-main">Gaste a janela na campanha, não na Arena.</strong> É o
+        detalhe que quase ninguém nota: o bônus de drop vale{' '}
+        <strong class="text-text-main">{c.SECOND_WIND_DROP_CHANCE_MULTIPLIER}×</strong> na campanha
+        mas só <strong class="text-text-main">{c.SECOND_WIND_DROP_CHANCE_MULTIPLIER_ARENA}×</strong>{' '}
+        na Arena. Arena é o que você faz <em>depois</em> que o fôlego acabou.
+      </li>
+      <li>
+        <strong class="text-text-main">Dentro da janela, vá no setor mais alto que você aguenta.</strong>{' '}
+        O multiplicador incide sobre a tabela de drop daquele setor — multiplicar uma tabela ruim
+        rende pouco (veja <a href={withBase('/setores')} class="text-gold hover:underline">Setores</a>).
       </li>
       <li>
         <strong class="text-text-main">Limpe o chefe do setor assim que liberar.</strong> A primeira
-        limpeza dá raridade garantida — é drop certo, não sorteio.
+        limpeza dá raridade garantida — é drop certo, não sorteio, e não depende de bônus.
       </li>
       <li>
-        <strong class="text-text-main">Desmonte antes de sair.</strong> Inventário cheio = drop
-        perdido, e Bloodmark é o que move a forja.
+        <strong class="text-text-main">Desmonte antes de fechar.</strong> Inventário cheio descarta
+        drop novo, e Bloodmark é o que move a forja.
       </li>
       <li>
         <strong class="text-text-main">Deixe o PvP rolando.</strong> É assíncrono: rende{' '}
@@ -232,6 +245,28 @@ const secondsPerBattle = c.STAMINA_COST_PER_BATTLE / c.STAMINA_REGEN_PER_SEC;
         chance de drop. Perder também paga.
       </li>
     </ol>
+
+    <div class="panel p-4 mt-4 max-w-3xl">
+      <p class="text-sm text-gold font-semibold mb-2">O ciclo diário que isso desenha</p>
+      <ul class="text-sm text-text-soft space-y-1.5 list-disc list-inside">
+        <li>
+          <strong class="text-text-main">Dormiu 8h</strong> → acorda com ~4h de bônus guardado
+        </li>
+        <li>
+          <strong class="text-text-main">Abre e farma campanha</strong> no setor mais alto enquanto o
+          fôlego durar, desmontando o lixo no caminho
+        </li>
+        <li>
+          <strong class="text-text-main">Fôlego acabou</strong> → aí sim Arena (re-completar ondas já
+          fechadas é o que dá <a href={withBase('/arena')} class="text-gold hover:underline">Ascendente</a>),
+          ou fecha o jogo e recomeça a encher
+        </li>
+        <li>
+          Ficar fora <strong class="text-text-main">mais de 16h</strong> não adianta: o saldo satura
+          em {c.SECOND_WIND_MAX_HOURS}h e o resto do tempo é jogado fora
+        </li>
+      </ul>
+    </div>
   </section>
 
   <section class="mb-12">

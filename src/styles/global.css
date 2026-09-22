@@ -182,6 +182,8 @@ body {
    sem precisar escurecer o fundo inteiro e apagar a ilustracao. */
 main > header p,
 main > section > p,
+main > section > ol,
+main > section > ul,
 main > p {
   text-shadow: var(--sombra-sobre-arte);
 }
