@@ -135,6 +135,13 @@ body {
   max-width: 72ch;
 }
 
+/* Nomes de constante do jogo (SECOND_WIND_OFFLINE_FALLBACK_MAX_HOURS e afins)
+   sao tokens unicos sem ponto de quebra: a 320px um deles sozinho empurrava a
+   pagina pra fora. `anywhere` so entra em acao quando nao ha alternativa. */
+code {
+  overflow-wrap: anywhere;
+}
+
 /* Filigrana dourada nos cantos — recortada do AB_UI_CHAR_PANEL do jogo. */
 .filigree::before,
 .filigree::after {

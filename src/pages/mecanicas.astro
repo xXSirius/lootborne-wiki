@@ -355,6 +355,70 @@ const c = constants as Record<string, number | string | boolean>;
     </ul>
   </section>
 
+  <section class="mb-12" id="progressao-setor">
+    <h2 class="section-title text-gold-bright mb-3">Progressão de setor: caminho de mão única</h2>
+    <p class="text-text-soft max-w-3xl mb-3">
+      Não existe escolher setor. O personagem guarda um único setor atual
+      (<code>currentSector</code>) e a lista do que já limpou (<code>sectorCleared</code>); limpar o
+      setor avança esse ponteiro sozinho, e a própria mensagem de vitória já anuncia a zona seguinte
+      ("NOVA ZONA"). O que dá pra afirmar do build:
+    </p>
+    <ul class="text-text-soft space-y-1.5 max-w-3xl list-disc list-inside text-sm mb-4">
+      <li>
+        O jogo tem cinco telas — <code>Creation</code>, <code>Home</code>, <code>Equip</code>,{' '}
+        <code>Inventory</code>, <code>Battle</code>. Nenhuma delas é seleção de fase
+      </li>
+      <li>
+        As únicas funções que trocam de setor são <code>DebugSetSector</code> e{' '}
+        <code>DebugSelectSectorOrArena</code>, alimentadas por um dropdown de desenvolvedor no painel
+        de Configurações. Esse dropdown não tem chave de tradução em idioma nenhum, e o build traz{' '}
+        <code>DEBUG_TOOLS_ENABLED = false</code>
+      </li>
+      <li>
+        Voltar acontece de um jeito só: <strong class="text-text-main">morrendo</strong>. O manual do
+        jogo diz que você "reinicia a zona atual desde o começo" — a atual, nunca uma anterior
+      </li>
+      <li>
+        Depois do setor 6 a campanha acaba e a Arena Eterna assume (<code>endlessMode</code>);
+        tampouco existe comando para sair dela. O emblema correspondente é literalmente "completou a
+        Zona 6 e terminou a campanha"
+      </li>
+    </ul>
+    <div class="panel p-4 max-w-3xl">
+      <p class="text-sm text-gold font-semibold mb-2">O que o jogo dá no lugar</p>
+      <ul class="text-sm text-text-soft space-y-2 list-disc list-inside">
+        <li>
+          <strong class="text-text-main">Recuperação de chefe.</strong> Quem passou de um setor sem
+          derrubar o chefe recebe o item exclusivo dele ao bater o chefe correspondente na{' '}
+          <a href={withBase('/arena')} class="text-gold hover:underline">Arena</a> — não precisa
+          voltar pra buscar o que ficou pra trás.
+        </li>
+        <li>
+          <strong class="text-text-main">Alívio de "murado".</strong> Ficar{' '}
+          <code>{c.MURATO_MIN_BATTLES_STUCK}</code> batalhas sem avançar e, nesse meio-tempo, fazer
+          pelo menos <code>{c.MURATO_MIN_DISTINCT_KINDS}</code> tipos diferentes de ação de meta
+          marca você como murado, e o fator de rebaixamento de drop passa a valer{' '}
+          <code>{c.MURATO_DROP_DEMOTE_FACTOR}</code>.
+        </li>
+      </ul>
+      <p class="text-sm text-text-soft leading-relaxed mt-3">
+        As ações que contam saem do enum <code>MuratoAction</code> cruzado com{' '}
+        <code>MURATO_ACTION_MASK = {c.MURATO_ACTION_MASK}</code>: Forja, Desmonte, Loja, Poção e
+        Perk. <strong class="text-text-main">Equipar não conta</strong> — o bit de Equip (32) está
+        fora da máscara. As asserções internas são explícitas sobre o resto: AFK não acumula nada,
+        vinte ações do mesmo tipo não qualificam (o limite é sobre <em>tipos</em>, não sobre
+        quantidade), o crédito decai depois de <code>{c.MURATO_IDLE_BATTLES_EXPIRY}</code> batalhas
+        sem nenhuma ação, e uma única ação o retoma. Re-limpar o setor depois de morrer não conta
+        como progresso.
+      </p>
+      <p class="text-xs text-text-muted mt-3">
+        Nomes, valores e regras acima são lidos do jogo. Onde exatamente o fator{' '}
+        <code class="text-amber">{c.MURATO_DROP_DEMOTE_FACTOR}</code> entra na conta do drop não é
+        legível — o corpo dos métodos não decompila.
+      </p>
+    </div>
+  </section>
+
   <section class="mb-12">
     <h2 class="section-title text-gold-bright mb-3">Setores e drop</h2>
     <p class="text-text-soft max-w-2xl mb-2">

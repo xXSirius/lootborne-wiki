@@ -92,11 +92,11 @@ const staminaBurst = Math.floor(c.STAMINA_MAX / c.STAMINA_COST_PER_BATTLE);
         <h3 class="font-semibold mb-1.5">4. Deixar o jogo aberto 24h</h3>
         <p class="text-text-soft text-sm">
           O Segundo Fôlego enche <strong class="text-text-main">enquanto você está fora</strong> —{' '}
-          {c.SECOND_WIND_ACCRUAL_PER_OFFLINE_HOUR}h de bônus por hora offline, até{' '}
-          {c.SECOND_WIND_MAX_HOURS}h de saldo — e vale {c.SECOND_WIND_XP_MULTIPLIER}× XP, moeda e
+          {c.SECOND_WIND_ACCRUAL_PER_OFFLINE_HOUR}h de bônus por hora offline, com teto em{' '}
+          {c.SECOND_WIND_MAX_HOURS}h — e vale {c.SECOND_WIND_XP_MULTIPLIER}× XP, moeda e
           chance de drop. Só que ele <strong class="text-text-main">queima em tempo real</strong>{' '}
-          assim que você abre o jogo: deixar aberto sem lutar torra o bônus à toa. Volte, gaste a
-          stamina, e feche.
+          assim que você abre o jogo: deixar aberto sem lutar torra o bônus à toa. Abra para jogar
+          de verdade, e feche quando parar.
         </p>
       </div>
     </div>
@@ -203,8 +203,8 @@ const staminaBurst = Math.floor(c.STAMINA_MAX / c.STAMINA_COST_PER_BATTLE);
         <dd>de bônus por hora fora</dd>
       </div>
       <div class="stat-box">
-        <dt>16 h</dt>
-        <dd>fora enchem o teto de {c.SECOND_WIND_MAX_HOURS}h</dd>
+        <dt>{c.SECOND_WIND_MAX_HOURS}h</dt>
+        <dd>teto do Segundo Fôlego</dd>
       </div>
       <div class="stat-box">
         <dt>{c.PITY_DROP_THRESHOLD}</dt>
@@ -226,9 +226,14 @@ const staminaBurst = Math.floor(c.STAMINA_MAX / c.STAMINA_COST_PER_BATTLE);
         na Arena. Arena é o que você faz <em>depois</em> que o fôlego acabou.
       </li>
       <li>
-        <strong class="text-text-main">Dentro da janela, vá no setor mais alto que você aguenta.</strong>{' '}
-        O multiplicador incide sobre a tabela de drop daquele setor — multiplicar uma tabela ruim
-        rende pouco (veja <a href={withBase('/setores')} class="text-gold hover:underline">Setores</a>).
+        <strong class="text-text-main">Você não escolhe o setor — então o que vale é limpar o que
+        está na frente.</strong>{' '}
+        Não existe seleção de fase no jogo: o setor anda sozinho quando você limpa, e não tem volta
+        (<a href={withBase('/mecanicas#progressao-setor')} class="text-gold hover:underline">a prova
+        está aqui</a>). Como o multiplicador incide sobre a tabela de drop do setor onde você está, e
+        a tabela do setor seguinte é sempre melhor que a do atual (veja{' '}
+        <a href={withBase('/setores')} class="text-gold hover:underline">Setores</a>), fechar um setor
+        durante a janela melhora tudo o que vem depois dela.
       </li>
       <li>
         <strong class="text-text-main">Limpe o chefe do setor assim que liberar.</strong> A primeira
@@ -253,8 +258,8 @@ const staminaBurst = Math.floor(c.STAMINA_MAX / c.STAMINA_COST_PER_BATTLE);
           <strong class="text-text-main">Dormiu 8h</strong> → acorda com ~4h de bônus guardado
         </li>
         <li>
-          <strong class="text-text-main">Abre e farma campanha</strong> no setor mais alto enquanto o
-          fôlego durar, desmontando o lixo no caminho
+          <strong class="text-text-main">Abre e farma campanha</strong> enquanto o fôlego durar,
+          desmontando o lixo no caminho
         </li>
         <li>
           <strong class="text-text-main">Fôlego acabou</strong> → aí sim Arena (re-completar ondas já
@@ -262,8 +267,11 @@ const staminaBurst = Math.floor(c.STAMINA_MAX / c.STAMINA_COST_PER_BATTLE);
           ou fecha o jogo e recomeça a encher
         </li>
         <li>
-          Ficar fora <strong class="text-text-main">mais de 16h</strong> não adianta: o saldo satura
-          em {c.SECOND_WIND_MAX_HOURS}h e o resto do tempo é jogado fora
+          O acúmulo tem teto — a constante <code class="text-amber">SECOND_WIND_MAX_HOURS</code> vale{' '}
+          {c.SECOND_WIND_MAX_HOURS}. Se esse 8 limita o saldo guardado ou as horas offline que
+          contam, o código não deixa ler (<a href={withBase('/mecanicas')} class="text-gold hover:underline">está
+          registrado em Mecânicas</a>). De qualquer forma o teto existe: passar dele é tempo fora
+          que não vira bônus
         </li>
       </ul>
     </div>
