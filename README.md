@@ -52,14 +52,21 @@ costuma ser uma spritesheet com vários frames lado a lado. Atenção ao eixo �
 de baixo pra cima e o PNG de cima pra baixo.
 
 `public/ui/` tem a interface do jogo (`scripts/extract-ui.mjs`): moldura de slot, ornamento de
-título, ícones de elemento e de navegação, arte de cenário para o fundo da página, e a filigrana
-dourada de canto — essa última recortada de dentro do `AB_UI_CHAR_PANEL`, com o fundo tornado
-transparente. As cores em `src/styles/tokens.css` foram amostradas dessas mesmas texturas, com a
-origem anotada; as de raridade são a exceção e estão marcadas como convenção da wiki, porque não há
-fonte de cor de raridade em lugar nenhum nos arquivos.
+título, ícones de elemento e de navegação, e a filigrana dourada de canto — essa última recortada de
+dentro do `AB_UI_CHAR_PANEL`, com o fundo tornado transparente. As cores em `src/styles/tokens.css`
+foram amostradas dessas mesmas texturas, com a origem anotada; as de raridade são a exceção e estão
+marcadas como convenção da wiki, porque não há fonte de cor de raridade em lugar nenhum nos arquivos.
+
+**Exceção de procedência:** `public/ui/backdrop-arte.jpg`, o fundo da página, **não** saiu do jogo —
+é arte original gerada para a wiki. Todo o resto de `public/` vem dos arquivos do Lootborne.
 
 A fonte de título é a `celtic-bit.ttf` que acompanha o jogo — Celtic-Bit, de Mirz123 (2010), livre
 para uso pessoal e comercial dentro de um projeto; não é um asset proprietário do Lootborne.
+
+As métricas verticais dessa fonte são inválidas (descender positivo, `lineGap` de 1250 num em de
+1000, ascender declarado menor que a altura real dos glifos). O `@font-face` em `global.css`
+corrige isso com `ascent-override` / `descent-override` medidos da tinta real via Canvas
+TextMetrics — sem eles o texto sobe dentro de qualquer caixa e parece erro de padding.
 
 ## Rodando local
 

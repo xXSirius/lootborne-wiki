@@ -23,6 +23,9 @@
   --t-amber: #ffaa44; /* usado nos tooltips de limite do jogo */
   --t-xp: #ffcc00; /* usado no texto de ganho de XP */
 
+  /* Sombra para texto que fica sobre a arte de fundo, sem painel atras. */
+  --sombra-sobre-arte: 0 1px 2px rgba(0, 0, 0, 0.9), 0 0 12px rgba(0, 0, 0, 0.75);
+
   /* --- Elementos: amostrados de AB_UI_GENERIC_ELEMENT_*.png --- */
   --e-flame: #ff640f;
   --e-frost: #28c7cd;

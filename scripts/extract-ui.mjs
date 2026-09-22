@@ -34,9 +34,6 @@ const UI = {
   'nav-manual.png': 'AB_UI_OPTIONS_ICON_MANUAL.png',
   'nav-inventario.png': 'AB_UI_REST_ICON_INVENTORY.png',
   'secondwind.png': 'AB_UI_SECONDWIND-ICON.png',
-  'backdrop.png': 'village_background.png',
-  'backdrop-graveyard.png': 'graveyard_background.png',
-  'backdrop-gorge.png': 'uhn_baa_gorge_background.png',
 };
 
 // Fonte de titulo do jogo. Celtic-Bit, de Mirz123 (2010), livre pra uso pessoal

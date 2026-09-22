@@ -2,10 +2,25 @@
 @import './tokens.css';
 
 /* Fonte de titulo do proprio jogo (Assets/Font/celtic-bit.ttf).
-   Celtic-Bit, de Mirz123 — livre pra uso pessoal e comercial num projeto. */
+   Celtic-Bit, de Mirz123 — livre pra uso pessoal e comercial num projeto.
+ *
+ * As metricas verticais do arquivo sao invalidas: o descender vem positivo
+ * (+17), o lineGap e' de 1250 unidades num em de 1000, e o ascender declarado
+ * (222) e' menor que a altura real dos glifos (1500). Na pratica o navegador
+ * reservava ascent 1.13em / descent 0.88em para uma tinta que ocupa de -0.38em
+ * a 1.00em — sobrava meio em de vazio embaixo de cada texto, que empurrava o
+ * titulo pra cima dentro do painel, do banner e das caixas de numero.
+ *
+ * Os overrides abaixo declaram a extensao real medida da tinta (Canvas
+ * TextMetrics), com uma folga simetrica de 0.06em, para o texto centralizar
+ * sozinho em qualquer caixa. Assim o alinhamento vem da metrica, nao de
+ * padding-top improvisado em cada componente. */
 @font-face {
   font-family: 'Celtic Bit';
   src: url('/fonts/celtic-bit.ttf') format('truetype');
+  ascent-override: 116%;
+  descent-override: 29%;
+  line-gap-override: 0%;
   font-display: swap;
 }
 
@@ -48,32 +63,42 @@ body {
   color: var(--t-text-main);
 }
 
-/* --- Fundo: arte de cenario do jogo, como pano de fundo da pagina ---------- */
-/* O backdrop e' 180x120; ampliado em tela cheia ele fica bem chunky, que e'
-   justamente a cara do jogo. Fica atras de tudo e bem apagado. */
+/* --- Fundo: arte de cenario atras de toda a pagina ------------------------ */
 .backdrop {
   position: fixed;
   inset: 0;
   z-index: -2;
-  background-image: url('/ui/backdrop.png');
-  background-size: cover;
-  background-position: center 30%;
-  image-rendering: pixelated;
-  opacity: 0.55;
+  background: url('/ui/backdrop-arte.jpg') center top / cover no-repeat;
 }
+
+/* Overlay de leitura. Nem todo texto vive dentro de painel — titulo de pagina,
+   paragrafo de introducao e titulo de secao ficam direto sobre a arte, que e'
+   clara e movimentada. Sao duas camadas:
+   1. um veu vertical, mais fechado no topo e no rodape (onde ficam a barra e o
+      texto legal) e um pouco mais aberto no miolo;
+   2. uma elipse central que fecha mais onde a coluna de conteudo passa,
+      deixando as laterais respirarem e a arte aparecer.
+   A opacidade foi calibrada medindo o contraste real do texto sobre o
+   resultado, nao no olho. */
 .backdrop::after {
   content: '';
   position: absolute;
   inset: 0;
-  /* Escurece o topo e a base pra nao competir com a barra e o rodape; o miolo
-     fica visivel porque o conteudo sempre vive dentro de paineis opacos. */
-  background: linear-gradient(
-    180deg,
-    var(--t-bg) 0%,
-    color-mix(in srgb, var(--t-bg) 35%, transparent) 22%,
-    color-mix(in srgb, var(--t-bg) 35%, transparent) 65%,
-    var(--t-bg) 100%
-  );
+  background:
+    radial-gradient(
+      ellipse 72% 85% at 50% 40%,
+      color-mix(in srgb, var(--t-bg) 74%, transparent) 0%,
+      color-mix(in srgb, var(--t-bg) 55%, transparent) 55%,
+      color-mix(in srgb, var(--t-bg) 25%, transparent) 100%
+    ),
+    linear-gradient(
+      180deg,
+      var(--t-bg) 0%,
+      color-mix(in srgb, var(--t-bg) 62%, transparent) 14%,
+      color-mix(in srgb, var(--t-bg) 50%, transparent) 45%,
+      color-mix(in srgb, var(--t-bg) 62%, transparent) 78%,
+      var(--t-bg) 100%
+    );
 }
 
 /* --- Paineis: faixa de titulo escura + corpo marrom + fio de cobre -------- */
@@ -141,6 +166,7 @@ body {
   font-size: clamp(1.5rem, 6vw, 2.25rem);
   line-height: 1.15;
   color: var(--t-gold-bright);
+  text-shadow: var(--sombra-sobre-arte);
 }
 
 /* Titulo de secao, mesma logica num degrau abaixo. */
@@ -148,6 +174,16 @@ body {
   font-family: var(--font-display);
   font-size: clamp(1.15rem, 4.2vw, 1.5rem);
   line-height: 1.2;
+  text-shadow: var(--sombra-sobre-arte);
+}
+
+/* Texto que fica direto sobre a arte de fundo, sem painel atras: a sombra
+   garante a leitura mesmo quando passa por cima de uma area clara do desenho,
+   sem precisar escurecer o fundo inteiro e apagar a ilustracao. */
+main > header p,
+main > section > p,
+main > p {
+  text-shadow: var(--sombra-sobre-arte);
 }
 
 /* --- Faixa de titulo de pagina ------------------------------------------- */
@@ -393,23 +429,34 @@ body {
 }
 
 /* --- Caixa de numero (as "stat boxes" da referencia) --------------------- */
+/* As caixas ficam numa grade, entao todas herdam a altura da mais alta. Como
+   coluna centralizada, o conteudo da caixa baixa fica no meio em vez de
+   grudado no topo com um vazio embaixo. */
 .stat-box {
   background: var(--t-deep);
   border: 1px solid color-mix(in srgb, var(--t-copper) 70%, transparent);
   padding: 0.5rem 0.75rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.1rem;
 }
 .stat-box dt {
   font-family: var(--font-display);
   font-size: 1.35rem;
   color: var(--t-gold-bright);
-  line-height: 1.1;
+  /* A tinta da Celtic Bit ocupa ~1.13em; um line-height menor que isso
+     espremia o numero contra a borda de cima. */
+  line-height: 1.25;
 }
 .stat-box dd {
-  font-size: 0.68rem;
+  font-size: 0.65rem;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   color: var(--t-text-muted);
   margin: 0;
+  /* Sem isso "nível máx." quebrava em duas linhas e esticava a fileira toda. */
+  white-space: nowrap;
 }
 
 .rarity-badge {
